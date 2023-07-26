@@ -11,7 +11,7 @@ pipeline {
             }
             steps {
                 script() {
-                    withAWS(credentials: 'Jenkins', region: 'eu-west-1', role: 'ContinuousIntegrationAccessRole', roleAccount: $params.aws_account) {
+                    withAWS(credentials: 'Jenkins', region: 'eu-west-1', role: 'ContinuousIntegrationAccessRole', roleAccount: "$params.aws_account") {
                         s3Download(
                             file: "$WORKSPACE/ansible/inventory/staging.inv",
                             bucket: "${bucket_name}",
