@@ -1,0 +1,3 @@
+app_docker: "buzzer_app"
+
+redis_cluster_host: "{{lookup('env', 'REDIS_HOST')}}"

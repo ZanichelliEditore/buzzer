@@ -1,0 +1,4 @@
+project_url:  buzzer.zanichelli.it
+idp_url: idp.zanichelli.it
+env_param: "production"
+email_from: noreplybuzzer@zanichelli.it

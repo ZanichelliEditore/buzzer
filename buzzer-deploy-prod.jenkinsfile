@@ -1,0 +1,97 @@
+pipeline {
+    agent {
+        label 'master'
+    }
+
+    stages {
+        stage('S3 download inventory file') {
+            environment {
+                bucket_name = 'public-ip-terraform-production'
+                bucket_path = 'buzzer-inventory'
+                SSH_HOST = '$SSH_HOST'
+            }
+            steps {
+                script() {
+                    withAWS(credentials: 'Jenkins', region: 'eu-west-1', role: 'ContinuousIntegrationAccessRole', roleAccount: $params.aws_account ) {
+                        s3Download(
+                            file: "$WORKSPACE/ansible/inventory/production.inv",
+                            bucket: "${bucket_name}",
+                            path: "${bucket_path}",
+                            force: true
+                        )
+                    }
+                }
+                sh """
+               more $WORKSPACE/ansible/inventory/production.inv |grep -m 1 'port' |awk '{print "ssh-keyscan -p", \$3, " -t ecdsa ", \$1, " >> ~/.ssh/known_hosts"}' |sed -n -e 's/ansible_port=//p'
+               """
+            }
+        }
+
+        stage('Start Ansible') {
+
+            environment {
+                ANSIBLE_PLAYBOOK_PATH = "$WORKSPACE/ansible/playbook.yml"
+                ANSIBLE_INVENTORY_PATH = "$WORKSPACE/ansible/inventory/production.inv"
+                BRANCH_NAME = "master"
+
+                MYSQL_USERNAME = credentials('buzzer_mysql_username_prod')
+                MYSQL_PASSWORD = credentials('buzzer_mysql_password_prod')
+                MYSQL_HOST = credentials('buzzer_mysql_host_prod')
+
+                REDIS_HOST = credentials('buzzer_redis_host_prod')
+                APP_KEY = credentials('buzzer_app_key')
+                CRYPT_KEY = credentials('buzzer_crypt_key')
+
+                SENDY_CLIENT = credentials('sendy_client_id')
+                SENDY_SECRET = credentials('sendy_client_secret')
+            }
+
+
+            steps {
+                echo 'deploy with ansible...'
+
+                withCredentials([
+                    file(credentialsId: 'certificate_zanichelli', variable: 'certificate'),
+                    file(credentialsId: 'key_zanichelli', variable: 'key'),
+                    file(credentialsId: 'oauth_public_key_buzzer_production', variable: 'public_key'),
+                    file(credentialsId: 'oauth_private_key_buzzer_production', variable: 'private_key')
+                ]) {
+                    sh "cp -n \$certificate $WORKSPACE/ansible/roles/deploy-buzzer/templates/ssl_certificate.crt"
+                    sh "cp -n \$key $WORKSPACE/ansible/roles/deploy-buzzer/templates/ssl_certificate.key"
+                    sh "cp -n \$public_key $WORKSPACE/ansible/roles/deploy-buzzer/templates/oauth-public.key"
+                    sh "cp -n \$private_key $WORKSPACE/ansible/roles/deploy-buzzer/templates/oauth-private.key"
+                }
+
+                sshagent(credentials: ['jenkins_private_key']) {
+                    ansiColor('xterm') {
+                        ansiblePlaybook(
+                            playbook: "${ANSIBLE_PLAYBOOK_PATH}",
+                            inventory: "${ANSIBLE_INVENTORY_PATH}",
+                            hostKeyChecking: false,
+                            extras: "--tags deploy",
+                            colorized: true
+                        )
+                    }
+                }
+            }
+        }
+
+        stage("Cleanup") {
+
+            steps {
+                echo "Cleaning up workspace..."
+                cleanWs()
+                sh 'pwd'
+                sh 'ls'
+            }
+        }
+    }
+
+    post {
+        failure {
+            node("master") {
+                echo "There were some errors during the pipeline execution."
+            }
+        }
+    }
+}

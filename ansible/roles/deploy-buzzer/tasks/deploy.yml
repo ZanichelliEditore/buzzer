@@ -1,0 +1,117 @@
+---
+# Deployment of the buzzer application
+- name: Wait for system to become reachable
+  wait_for_connection:
+    timeout: 300
+
+- name: Gather facts
+  setup:
+
+- name: create base deploy path folder
+  become: yes
+  file: >
+    path={{ deploy_path }}
+    state=directory
+    group={{ remote_user }}
+    owner={{ remote_user }}
+
+- name: create certs folder
+  become: yes
+  file: >
+    path="{{ deploy_path }}/certs"
+    state=directory
+    group={{ remote_user }}
+    owner={{ remote_user }}
+
+- name: create .composer folder
+  become: no
+  file: >
+    path="~/.composer"
+    state=directory
+    group={{ remote_user }}
+    owner={{ remote_user }}
+
+- name: synchronize files to application folder
+  synchronize:
+    src: src/
+    dest: "{{ deploy_path }}"
+    checksum: yes
+    archive: no
+    delete: no
+    recursive: yes
+    use_ssh_args: yes
+    rsync_opts:
+      - "-v"
+      - "--exclude=*.git"
+      - "--exclude=.git*"
+      - "--exclude=terraform"
+      - "--exclude=ansible"
+      - "--include=*"
+
+- name: Copy across new env file for the laravel app
+  template: src=.env.j2
+    dest={{ deploy_path }}/.env
+
+- name: Copy across new cert file 1
+  template: src=ssl_certificate.crt
+    dest={{ deploy_path }}/certs/ssl_certificate.crt
+
+- name: Copy across new cert file 2
+  template: src=ssl_certificate.key
+    dest={{ deploy_path }}/certs/ssl_certificate.key
+
+- name: Copy across oauth_public.key
+  template: src=oauth-public.key
+    dest={{ deploy_path }}/storage/oauth-public.key
+
+- name: Copy across oauth_private.key
+  template: src=oauth-private.key
+    dest={{ deploy_path }}/storage/oauth-private.key
+
+- name: adding existing user 'ubuntu' to group docker
+  become: yes
+  user:
+    name: "{{ remote_user }}"
+    groups: docker
+    append: yes
+
+- name: reset connection for user ubuntu
+  meta: reset_connection
+
+- name: Remove the containers
+  command: "/usr/local/bin/docker-compose -f {{ deploy_path }}/docker-compose.prod.yml down"
+  ignore_errors: yes
+
+- name: Remove app volume
+  command: "/usr/bin/docker volume rm buzzer_app"
+  ignore_errors: yes
+
+- name: Remove node volume
+  command: "/usr/bin/docker volume rm buzzer_nodejs"
+  ignore_errors: yes
+
+- name: Start and rebuild the containers
+  command: "/usr/local/bin/docker-compose -f {{ deploy_path }}/docker-compose.prod.yml up -d --build"
+
+- name: Install npm
+  command: "/usr/local/bin/docker-compose -f {{ deploy_path }}/docker-compose.prod.yml run --rm nodejs npm install"
+
+- name: Run npm
+  command: "/usr/local/bin/docker-compose -f {{ deploy_path }}/docker-compose.prod.yml run --rm nodejs npm run build"
+
+- name: Run composer install
+  command: "docker exec buzzer_app composer install"
+
+- name: Run migrations
+  command: "docker exec buzzer_app php artisan migrate --force"
+
+- name: Run generate documentation
+  command: "docker exec buzzer_app php artisan l5-swagger:generate"
+
+- name: Publish telescope
+  command: "docker exec buzzer_app php artisan telescope:publish"
+
+- name: Create crontab job to run laravel scheduler
+  ansible.builtin.cron:
+    name: "Run laravel scheduler"
+    job: "/usr/bin/docker exec {{ app_docker }} php artisan schedule:run"

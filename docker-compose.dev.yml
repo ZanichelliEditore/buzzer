@@ -1,0 +1,114 @@
+version: "2"
+services:
+  web:
+    build:
+      context: ./
+      dockerfile: docker/web-dev.dockerfile
+    container_name: buzzer_web
+    volumes:
+      - ./:/var/www
+    ports:
+      - "8085:80"
+    links:
+      - app
+    networks:
+      static-network:
+        ipv4_address: 10.100.0.7
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+        max-file: "3"
+  nodejs:
+    build:
+      context: ./
+      dockerfile: docker/node.dockerfile
+      args:
+        - NODE_VERSION=16.18.1
+    container_name: buzzer_nodejs
+    volumes:
+      - ./:/var/www/
+    networks:
+      static-network:
+        ipv4_address: 10.100.0.2
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+        max-file: "3"
+  app:
+    build:
+      context: ./
+      dockerfile: docker/php/app-dev.dockerfile
+      args:
+        - USER=${USER}
+    networks:
+      static-network:
+        ipv4_address: 10.100.0.3
+    container_name: buzzer_app
+    volumes:
+      - ./:/var/www
+    links:
+      - database
+      - redis
+    environment:
+      - "DB_HOST=database"
+      - "DB_PORT=3306"
+      - "DB_DATABASE=buzzer"
+      - "REDIS_HOST=redis"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+        max-file: "3"
+  database:
+    image: mysql:5.7
+    container_name: buzzer_db
+    environment:
+      - "MYSQL_ROOT_PASSWORD=secret"
+      - "MYSQL_DATABASE=buzzer"
+    ports:
+      - "33064:3306"
+    networks:
+      static-network:
+        ipv4_address: 10.100.0.4
+  redis:
+    container_name: buzzer_redis
+    image: redis:5.0.5
+    ports:
+      - "6379:6379"
+    networks:
+      static-network:
+        ipv4_address: 10.100.0.8
+  phpmyadmin:
+    image: "phpmyadmin/phpmyadmin"
+    container_name: buzzer_phpmyadmin
+    networks:
+      static-network:
+        ipv4_address: 10.100.0.5
+    links:
+      - database
+    ports:
+      - "8086:80"
+    environment:
+      - "PMA_HOST=database"
+      - "PMA_USER=root"
+      - "PMA_PASSWORD=secret"
+  filebeat:
+    build:
+      context: ./
+      dockerfile: docker/filebeat/filebeat.dockerfile
+    container_name: buzzer_filebeat
+    environment:
+      - strict.perms=false
+    volumes:
+      - ./storage/logs/:/app/log/
+    networks:
+      static-network:
+        ipv4_address: 10.100.0.9
+networks:
+  static-network:
+    ipam:
+      config:
+        - subnet: 10.100.0.0/16
+          ip_range: 10.101.0.0/16

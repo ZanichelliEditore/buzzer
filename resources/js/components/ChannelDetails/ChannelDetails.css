@@ -1,0 +1,19 @@
+#sidebar {
+    right: 0;
+}
+
+.min-lenght-button {
+    width: 150px;
+}
+
+.opz-alert {
+    padding: 6px 10px;
+    border-radius: .25rem;
+    -webkit-box-shadow: 0 0 10px 2px rgba(255,185,79,0.8);
+    -moz-box-shadow: 0 0 10px 2px rgba(255,185,79,0.8);
+    box-shadow: 0 0 10px 2px rgba(255,185,79,0.8);
+}
+
+.fa-exclamation-triangle {
+    color: rgb(255,214,79);
+}

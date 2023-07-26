@@ -1,0 +1,4 @@
+project_url: buzzer-test.zanichelli.it
+idp_url: idp-test.zanichelli.it
+env_param: "staging"
+email_from: noreplybuzzertest@zanichelli.it

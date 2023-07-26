@@ -1,0 +1,8 @@
+---
+- hosts: buzzer
+  gather_facts: no
+  remote_user: ubuntu
+  vars_files:
+    - vars/buzzer.yml
+  roles:
+    - { role: deploy-buzzer, tags: ["deploy"] }

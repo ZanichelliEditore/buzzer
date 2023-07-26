@@ -1,0 +1,74 @@
+pipeline {
+    agent {
+        label 'master'
+    }
+
+    stages {
+
+        stage("Run PHPUnit tests") {
+
+            environment {
+                DOCKER_BUILD_USER = "jenkins"
+            }
+
+            steps {
+                script {
+                    echo "Starting database container"
+                    docker.image("mysql:5.7").withRun("-e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=buzzer \
+                        -p 33063:3306") { databaseContainer ->
+                        docker.image('mysql:5.7').inside("--link ${databaseContainer.id}:database") {
+                            sh 'while ! mysqladmin ping -hdatabase --silent; do sleep 1; done'
+                        }
+
+                        def appImage = docker.build("buzzer_app", "--build-arg USER=${DOCKER_BUILD_USER} -f app-dev.dockerfile .")
+
+                        echo "Starting application container"
+                        appImage.inside("--link ${databaseContainer.id}:database \
+                            -e DB_HOST=database \
+                            -e PHP_INI_SCAN_DIR=/usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d \
+                            -v /\$(pwd)/:/var/www \
+                            -v /\$(pwd)/custom.d:/usr/local/etc/php/custom.d") {
+                            echo "Installing Composer dependencies..."
+                            sh "composer install"
+
+                            echo "Creating .env file"
+                            sh "cp .env.example .env"
+
+                            echo "Launching app key generation and database migrations..."
+                            sh """
+                                php artisan key:generate
+                                php artisan migrate
+                            """
+
+                            echo "Launching PHPUnit tests..."
+                            sh "vendor/bin/phpunit"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("Cleanup") {
+
+            steps {
+                echo "Cleaning up workspace..."
+                echo "Delete project images and volumes unused"
+                sh '''
+                    docker rmi -f $(docker images |grep '^<none>\\|^buzzer_' |awk '{print \$3}')
+                    docker volume prune -f
+                '''
+                cleanWs()
+                sh 'pwd'
+                sh 'ls'
+            }
+        }
+    }
+
+    post {
+        failure {
+            node("master") {
+                echo "There were some errors during the pipeline execution."
+            }
+        }
+    }
+}

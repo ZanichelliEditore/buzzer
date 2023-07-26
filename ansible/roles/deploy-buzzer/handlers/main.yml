@@ -1,0 +1,4 @@
+---
+- name: remove local checkout
+  local_action: file path=src state=absent
+  become: false

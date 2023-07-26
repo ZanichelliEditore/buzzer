@@ -1,0 +1,72 @@
+version: "2"
+services:
+  web:
+    build:
+      context: ./
+      dockerfile: docker/web-prod.dockerfile
+    container_name: buzzer_web
+    volumes:
+      - app:/var/www
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - app
+    restart: always
+    network_mode: "bridge"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+        max-file: "3"
+  app:
+    build:
+      context: ./
+      dockerfile: docker/php/app-prod.dockerfile
+    container_name: buzzer_app
+    volumes:
+      - app:/var/www
+      - appVendor:/var/www/vendor
+      - appLogs:/var/www/storage/logs
+    restart: always
+    network_mode: "bridge"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+        max-file: "3"
+  nodejs:
+    build:
+      context: ./
+      dockerfile: docker/node.dockerfile
+      args:
+        - NODE_VERSION=16.18.1
+    container_name: buzzer_nodejs
+    volumes:
+      - app:/var/www/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+        max-file: "3"
+  filebeat:
+    build:
+      context: ./
+      dockerfile: docker/filebeat/filebeat-prod.dockerfile
+    container_name: buzzer_filebeat
+    restart: always
+    environment:
+      - strict.perms=false
+    volumes:
+      - appLogs:/app/log/
+    network_mode: "bridge"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+        max-file: "3"
+volumes:
+  app:
+  appVendor:
+  appNode:
+  appLogs:

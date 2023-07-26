@@ -1,0 +1,15 @@
+remote_user: ubuntu
+deploy_path: "/home/{{ remote_user }}/buzzer"
+checkout_branch: "{{lookup('env', 'BRANCH_NAME')}}"
+
+document_root: "{{ deploy_path }}/public"
+
+db_host: "{{lookup('env', 'MYSQL_HOST')}}"
+db_name: "buzzer"
+db_username: "{{lookup('env', 'MYSQL_USERNAME')}}"
+db_password: "{{lookup('env', 'MYSQL_PASSWORD')}}"
+app_key: "{{lookup('env', 'APP_KEY')}}"
+crypt_key: "{{lookup('env', 'CRYPT_KEY')}}"
+
+sendy_client_id: "{{lookup('env', 'SENDY_CLIENT')}}"
+sendy_client_secret: "{{lookup('env', 'SENDY_SECRET')}}"

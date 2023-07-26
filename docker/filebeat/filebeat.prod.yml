@@ -1,0 +1,13 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+filebeat.inputs:
+  - type: filestream
+    id: buzzer-logs
+    paths:
+      - /app/log/*.log
+
+output.logstash:
+  hosts: ["46.137.80.23:5044"]
+  index: buzzer
