@@ -55,8 +55,8 @@ pipeline {
                     file(credentialsId: 'oauth_public_key_buzzer_staging', variable: 'public_key'),
                     file(credentialsId: 'oauth_private_key_buzzer_staging', variable: 'private_key')
                 ]) {
-                    sh "cp -n \$certificate $WORKSPACE/ansible/roles/deploy-buzzer/templates/$params.certificate_file_name"
-                    sh "cp -n \$key $WORKSPACE/ansible/roles/deploy-buzzer/templates/$params.certificate_key_file_name"
+                    sh "cp -n \$certificate $WORKSPACE/ansible/roles/deploy-buzzer/templates/ssl_certificate.crt"
+                    sh "cp -n \$key $WORKSPACE/ansible/roles/deploy-buzzer/templates/ssl_certificate.key"
                     sh "cp -n \$public_key $WORKSPACE/ansible/roles/deploy-buzzer/templates/oauth-public.key"
                     sh "cp -n \$private_key $WORKSPACE/ansible/roles/deploy-buzzer/templates/oauth-private.key"
                 }
