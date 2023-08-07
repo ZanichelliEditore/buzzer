@@ -10,7 +10,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 {
     const ID_NOT_VALID = 99999999;
 
-    public function getEndpoint()
+    static function getEndpoint()
     {
         return [
             ['example/endpoint', 'example/endpoint'],

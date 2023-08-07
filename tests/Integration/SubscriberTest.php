@@ -166,7 +166,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         ]);
     }
 
-    public function getHost()
+    static function getHost()
     {
         return [
             ['https://example.com', 'https://example.com/'],

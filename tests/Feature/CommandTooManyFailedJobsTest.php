@@ -34,7 +34,7 @@ class CommandTooManyFailedJobsTest extends TestCaseWithoutMiddleware
         $this->artisan('check:failed-jobs')->assertExitCode(0);
    }
 
-   public function tooManyFailedJobsProvider()
+   static function tooManyFailedJobsProvider()
    {
        return [
            [99, 0],

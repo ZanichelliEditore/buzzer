@@ -24,7 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('passport:purge')->dailyAt('3:00')->onOneServer();
         $schedule->command('telescope:prune')->daily()->onOneServer();
+        
         $schedule->command('check:failed-jobs')->weekdays()->twiceDailyAt(9, 14)->onOneServer();
     }
 

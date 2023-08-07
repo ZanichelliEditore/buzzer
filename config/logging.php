@@ -2,6 +2,7 @@
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
+use Monolog\Processor\PsrLogMessageProcessor;
 
 return [
 
@@ -44,6 +45,7 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
             'level' => 'debug',
+            'replace_placeholders' => true,
         ],
 
         'daily' => [
@@ -51,6 +53,7 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => 'debug',
             'days' => 3,
+            'replace_placeholders' => true,
         ],
 
         'slack' => [
@@ -59,6 +62,7 @@ return [
             'username' => 'Laravel Log',
             'emoji' => ':boom:',
             'level' => 'critical',
+            'replace_placeholders' => true,
         ],
 
         'papertrail' => [
@@ -69,6 +73,7 @@ return [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
             ],
+            'processors' => [PsrLogMessageProcessor::class],
         ],
 
         'stderr' => [
@@ -78,16 +83,20 @@ return [
             'with' => [
                 'stream' => 'php://stderr',
             ],
+            'processors' => [PsrLogMessageProcessor::class],
         ],
 
         'syslog' => [
             'driver' => 'syslog',
             'level' => 'debug',
+            'facility' => LOG_USER,
+            'replace_placeholders' => true,
         ],
 
         'errorlog' => [
             'driver' => 'errorlog',
             'level' => 'debug',
+            'replace_placeholders' => true,
         ],
 
         'debug' => [

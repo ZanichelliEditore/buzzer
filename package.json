@@ -1,4 +1,6 @@
 {
+
+    "name": "buzzer",
     "private": true,
     "scripts": {
         "dev": "vite --host",

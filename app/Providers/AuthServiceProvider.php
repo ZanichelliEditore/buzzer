@@ -23,8 +23,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerPolicies();
-
         Gate::define('board', function ($user, $permission) {
             if (!in_array($permission, $user->permissions)) {
                 Log::error('403* ' . '{"content" :"User with id  ' . $user->id . ' is not authorized (permission required:' . $permission . ')"}');
@@ -33,7 +31,6 @@ class AuthServiceProvider extends ServiceProvider
             return true;
         });
 
-        Passport::routes();
         Passport::tokensExpireIn(now()->addMinutes(2));
         Passport::refreshTokensExpireIn(now()->addDays(30));
     }
