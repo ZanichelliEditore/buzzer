@@ -19,7 +19,7 @@ jobs:
           cp .env.example .env
           export UID
           docker-compose -f docker-compose.dev.yml up --build -d
-          docker exec -i sendy_app id
+          docker exec -i buzzer_app id
           docker exec -i buzzer_app composer install
 
       # php artisan key:generate
