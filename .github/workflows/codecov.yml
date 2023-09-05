@@ -18,7 +18,8 @@ jobs:
       - run: |
           cp .env.example .env
           docker-compose -f docker-compose.dev.yml up --build -d
-          docker exec -i buzzer_app composer install
+          docker exec -i buzzer_app bash
+          php artisan composer install
 
       # php artisan key:generate
       # php artisan migrate
