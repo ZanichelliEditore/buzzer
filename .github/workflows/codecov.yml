@@ -17,9 +17,10 @@ jobs:
       - uses: actions/checkout@v3
       - run: |
           cp .env.example .env
+          export UID
           docker-compose -f docker-compose.dev.yml up --build -d
-          docker exec -i buzzer_app bash
-          php artisan composer install
+          docker exec -i sendy_app id
+          docker exec -i buzzer_app composer install
 
       # php artisan key:generate
       # php artisan migrate
