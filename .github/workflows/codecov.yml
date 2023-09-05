@@ -21,7 +21,10 @@ jobs:
           docker-compose -f docker-compose.dev.yml up --build -d
           docker exec -i buzzer_app id
           docker exec -i -u root buzzer_app composer install
+          docker exec -i -u root buzzer_app php artisan key:generate
+          docker exec -i -u root buzzer_app php artisan migrate
 
+      # provare senza "export UID" e "docker exec -i buzzer_app id"
       # php artisan key:generate
       # php artisan migrate
       # - name: Upload coverage reports to Codecov
