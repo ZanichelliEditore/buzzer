@@ -17,10 +17,10 @@ jobs:
       - run: |
           cp .env.example .env
           docker-compose -f docker-compose.dev.yml up --build -d
-          docker exec buzzer_app bash
-          composer install
-          php artisan key:generate
-          php artisan migrate
+          docker exec -i buzzer_app composer install
+
+      # php artisan key:generate
+      # php artisan migrate
       # - name: Upload coverage reports to Codecov
       #   uses: codecov/codecov-action@v3
       #   env:
