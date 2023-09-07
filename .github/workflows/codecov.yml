@@ -23,7 +23,7 @@ jobs:
           docker exec -i -u root buzzer_app composer install
           docker exec -i -u root buzzer_app php artisan key:generate
           docker exec -i -u root buzzer_app php artisan migrate
-          docker exec -i -u root buzzer_app vendor/bin/phpunit --coverage-html tmp/coverage
+          docker exec -i -u root buzzer_app vendor/bin/phpunit --coverage-clover=coverage.xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
