@@ -5,11 +5,11 @@ on:
     types:
       - opened
     branches:
-      - 'master'
+      - "master"
   push:
     branches:
-      - 'master'
-      - 'BZR-**'
+      - "master"
+      - "BZR-**"
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -24,9 +24,9 @@ jobs:
           docker exec -i -u root buzzer_app php artisan key:generate
           docker exec -i -u root buzzer_app php artisan migrate
           docker exec -i -u root buzzer_app vendor/bin/phpunit --coverage-html tmp/coverage
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       # provare senza "export UID" e "docker exec -i buzzer_app id"
-      # - name: Upload coverage reports to Codecov
-      #   uses: codecov/codecov-action@v3
-      #   env:
-      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
