@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y wget libmcrypt-dev mariadb-client \
 RUN docker-php-ext-install pdo_mysql
 
 RUN apt-get install -y supervisor
-COPY docker/php/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 CMD ["/usr/bin/supervisord"]
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

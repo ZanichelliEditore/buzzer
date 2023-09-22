@@ -22,7 +22,7 @@ services:
   app:
     build:
       context: ./
-      dockerfile: docker/php/app-prod.dockerfile
+      dockerfile: app-prod.dockerfile
     container_name: buzzer_app
     volumes:
       - app:/var/www
