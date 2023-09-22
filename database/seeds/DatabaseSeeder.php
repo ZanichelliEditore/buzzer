@@ -1,8 +1,6 @@
 <?php
 
-use App\Models\ChannelPublish;
 use Illuminate\Database\Seeder;
-use App\Models\ChannelSubscribe;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder

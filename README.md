@@ -29,9 +29,9 @@ Please note that **steps 2 to 5** are **optional** (but recommended). Follow the
 
     1. If you want to try the app without authenticating, set `USE_ZANICHELLI_IDP=false`
 
-3.  From the project's root folder, build Docker images with
+3. From the project's root folder, build your Docker images with `make rebuild` or:
 
-        `docker-compose -f docker-compose.dev.yml up --build -d` or `make rebuild`
+        `docker-compose -f docker-compose.dev.yml up --build -d`
 
 4.  You must run the next few commands _inside_ the app's container. To enter the container, use `make shell` or:
 
@@ -45,15 +45,19 @@ Please note that **steps 2 to 5** are **optional** (but recommended). Follow the
 
         `php artisan key:generate`
 
-7.  To aid with development, you can also publish telescope assets
+7. Generate passport keys
+
+        `php artisan passport:keys`
+
+8. To aid with development, you can also publish telescope assets
 
         `php artisan telescope:publish`
 
-8.  Launch migrations and seeders to create and populate the database tables
+9. Launch migrations and seeders to create and populate the database tables
 
         `php artisan migrate --seed`
 
-9.  Exit the container shell with _ctrl+D_ / _cmd+D_ then run:
+10.  Exit the container shell with *ctrl+D* / *cmd+D* then run:
     - `make npm_install`
     - `make npm_run`
 
@@ -114,37 +118,42 @@ Here is where you can configure the exact endpoints for your subscribers.
 
 ## Failed Jobs
 
-Here you'll find a list of all failed jobs, with an option to retry or delete them. You can do this both for single jobs or for all failed jobs at once.
+Here you'll find a list of all failed jobs, with an option to retry or delete them. You can do this either for single jobs or for all failed jobs at once.
 
 # Usage
 
-To get a feeling for how the app works, you can follow the next few steps for a quick test run from the GUI.
+To get a feel for how the app works, you can follow the next few steps for a quick test run from the GUI.
 The following guide assumes you already completed the steps outlined in the [Setup](#setup) section and buzzer is currently running.
 
 1.  if you open the app at http://localhost:8085, you'll notice there's already one channel, named "me". We'll send our message to this channel.
 2.  open another terminal in the project root and use either `make shell` or `docker exec -it buzzer_app bash` to enter the app's container.
     1.  run `php artisan queue:work` and leave the terminal open. This will ensure our message gets processed.
-3.  inside /storage/logs you will find a file with today's date. Open it; we'll need it later.
+3.  inside /storage/logs you will find a file with today's date. Open it; we'll need it later. If you don't see it, don't worry. It will materialize as soon as the first log is generated.
 4.  open http://localhost:8085/api/documentation
     1.  search for /api/sendMessage and open it
     2.  hit "Try it out" and a few more fields and controls will appear
     3.  edit the request body so that the value for `"channel"` matches an existing channel. In our case, `"channel": "me"`
     4.  hit "Execute"
     5.  fill out the basic auth form using credentials from the test publisher: "test" and "pwd"
-5.  We sent our message!
+5.  we just sent our message to the three test APIs listed as subscribers for our channel!
 6.  looking at the log file from step 3, notice how three logs have appeared. They're the result of a call to three different APIs. See the [#channels](#channels) section of the GUI for more information.
 
 # Testing
 
 You can run tests using the PHPUnit binary located in the vendor directory
 
--   Run every method of a specific test class
+- Run all tests
+    - `docker exec -it buzzer_app vendor/bin/phpunit` or `make run_tests`
 
-    -   `docker exec appContainerName vendor/bin/phpunit tests/Feature/TestClassName` or `make run_tests tests/Feature/TestClassName`
+- Run every method of a specific test class
+    - `docker exec -it buzzer_app vendor/bin/phpunit tests/Feature/TestClassName` or `make run_tests tests/Feature/TestClassName`
 
--   Run a single method of a specific test class
+- Run a single method of a specific test class
+    - `docker exec -it buzzer_app vendor/bin/phpunit --filter testMethodName tests/Feature/TestClassName`  or `make run_tests --filter testMethodName tests/Feature/TestClassName`
 
-    -   `docker exec appContainerName vendor/bin/phpunit --filter testMethodName tests/Feature/TestClassName` or `make run_tests --filter testMethodName tests/Feature/TestClassName`
+- To generate the HTML code coverage report pass the following option: `--coverage-html tmp/coverage`
+    - `docker exec buzzer_app vendor/bin/phpunit --coverage-html tmp/coverage`  or `make run_coverage`
+    - navigate to tmp/coverage and open the included `index.html` file in your browser
 
 -   To generate the HTML code coverage report pass the following option: `--coverage-html tmp/coverage`
     -   `docker exec --coverage-html tmp/coverage appContainerName vendor/bin/phpunit tests/Feature/TestClassName` or `make run_coverage`
