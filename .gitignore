@@ -13,7 +13,6 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
-/storage/api-docs
 auth.json
 .DS_Store
 /public/[0-9].js

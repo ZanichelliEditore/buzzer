@@ -1,0 +1,793 @@
+openapi: 3.0.0
+info:
+  title: Zanichelli API Buzzer projects
+  description: REST APIs to get channels info
+  contact:
+    name: Zanichelli DEV team
+    email: developers@zanichelli.it
+  version: 1.0.0
+servers:
+  - url: http://localhost:8085
+paths:
+  /api/channels:
+    get:
+      tags:
+        - channels
+      summary: List of all channels
+      description: Use to get the list of all channels
+      operationId: App\Http\Controllers\ChannelController::getList
+      parameters:
+        - name: q
+          in: query
+          description: values to filter returned data (name values)
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: order
+          in: query
+          description: 'type of order: ASC, DESC'
+          required: false
+          schema:
+            type: string
+        - name: orderBy
+          in: query
+          description: 'field to order: id - name(default) - created_at - updated_at'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '500':
+          $ref: '#/components/responses/Error500'
+    post:
+      tags:
+        - channels
+      summary: Save new channel
+      description: Use to store a new channel
+      operationId: App\Http\Controllers\ChannelController::store
+      requestBody:
+        description: Channel object that needs to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      responses:
+        '201':
+          $ref: '#/components/responses/Success201'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/channels/{id}:
+    get:
+      tags:
+        - channels
+      summary: Find a channel by id
+      description: Use to get a channel by id
+      operationId: channelController.getchannel
+      parameters:
+        - name: id
+          in: path
+          description: channel id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+    delete:
+      tags:
+        - channels
+      summary: Delete the channel
+      description: Delete channel and its relations
+      operationId: App\Http\Controllers\ChannelController::destroy
+      parameters:
+        - name: id
+          in: path
+          description: channel id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/channels/{id}/subscribers:
+    get:
+      tags:
+        - channels
+      summary: List of all subscribers of a channel
+      description: Use to get the list of all the subscribers of a channel
+      operationId: ChannelController.getChannelSubscribers
+      parameters:
+        - name: id
+          in: path
+          description: Channel id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /api/channels/{id}/publishers:
+    get:
+      tags:
+        - channels
+      summary: List of all publishers of a channel
+      description: Use to get the list of all the publishers of a channel
+      operationId: ChannelController.getChannelPublishers
+      parameters:
+        - name: id
+          in: path
+          description: Channel id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /api/sendMessage:
+    post:
+      tags:
+        - channels
+      summary: Send a message
+      description: Use to send messages to the subscribers of a channel
+      operationId: ChannelController.sendMessage
+      requestBody:
+        description: Message that needs to be sent and channel name
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessage'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '422':
+          $ref: '#/components/responses/Error422'
+      security:
+        - basicAuth: []
+  /api/sendMessage/{channelName}:
+    post:
+      tags:
+        - channels
+      summary: Send a message to Channel
+      description: Use to send messages to the subscribers of a channel
+      operationId: ChannelController.sendMessage
+      requestBody:
+        description: Message that needs to be sent
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '422':
+          $ref: '#/components/responses/Error422'
+      security:
+        - basicAuth: []
+  /api/publishers/{publisher_id}/channels:
+    get:
+      tags:
+        - publishers
+      summary: Find a publisher registration by id
+      description: Use to get a publisher registration by id
+      operationId: ChannelPublishController.getChannelPublish
+      parameters:
+        - name: publisher_id
+          in: path
+          description: Publisher id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+        - publishers
+      summary: Save new publisher registration to a channel
+      description: Use to register a publisher to a channel
+      operationId: ChannelPublishController.store
+      parameters:
+        - name: publisher_id
+          in: path
+          description: publisher id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        description: Registration object that needs to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelPublish'
+      responses:
+        '201':
+          $ref: '#/components/responses/Success201'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/publishers/{publisher_id}/channels/{channel_id}:
+    delete:
+      tags:
+        - publishers
+      summary: Delete a publisher registration
+      description: Insert the publisher id and channel id that you want to delete
+      operationId: ChannelPublishController.destroy
+      parameters:
+        - name: publisher_id
+          in: path
+          description: Publisher id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: channel_id
+          in: path
+          description: Channel id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/subscribers/{subscriber_id}/channels:
+    post:
+      tags:
+        - subscribers
+      summary: Save new subscriber registration to a channel
+      description: Use to register a subscriber to a channel
+      operationId: ChannelSubscribeController.store
+      parameters:
+        - name: subscriber_id
+          in: path
+          description: Subscribers id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        description: Registration object that needs to be created
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChannelSubscribe'
+      responses:
+        '201':
+          $ref: '#/components/responses/Success201'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/subscribers/{id}/channels:
+    get:
+      tags:
+        - subscribers
+      summary: Find a subscriber registration by id of subscribers
+      description: Use to get a subscriber registrations by id
+      operationId: ChannelSubscribeController.getChannelSubscribe
+      parameters:
+        - name: id
+          in: path
+          description: subscriber id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /api/subscribers/{subscriber_id}/channels/{channel_id}:
+    delete:
+      tags:
+        - subscribers
+      summary: Delete a subscriber registration
+      description: Insert the subscriber id and channel_id that you want to delete
+      operationId: ChannelSubscribeController.destroy
+      parameters:
+        - name: subscriber_id
+          in: path
+          description: Subscriber id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: channel_id
+          in: path
+          description: channel id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/failedJobs:
+    get:
+      tags:
+        - jobs
+      summary: List of all the failed jobs
+      description: Use to get the list of all failed jobs
+      operationId: App\Http\Controllers\FailedJobController::getList
+      parameters:
+        - name: q
+          in: query
+          description: values to filter returned data (payload values)
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: order
+          in: query
+          description: 'type of order: ASC, DESC'
+          required: false
+          schema:
+            type: string
+        - name: orderBy
+          in: query
+          description: 'field to order: id - name(default) - created_at - updated_at'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/failedJobs/retry/{id}:
+    get:
+      tags:
+        - jobs
+      summary: Retry a failed jobs
+      description: Use to retry a failed job
+      operationId: failedJobController.retryJob
+      parameters:
+        - name: id
+          in: path
+          description: id of the job that you want to retry
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/failedJobs/{id}:
+    delete:
+      tags:
+        - jobs
+      summary: Delete the failed Job
+      description: Insert the failed job id that you want to delete
+      operationId: FailedJobController.destroy
+      parameters:
+        - name: id
+          in: path
+          description: id of the job that you want to delete
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/failedJobs/all:
+    delete:
+      tags:
+        - jobs
+      summary: Delete all the failed Jobs
+      description: Delete all jobs in failed_jobs table
+      operationId: FailedJobController.destroyAll
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/failedJobs/retry/all:
+    get:
+      tags:
+        - jobs
+      summary: Retry all the failed Jobs
+      description: Retry all jobs in failed_jobs table
+      operationId: FailedJobController.retryAll
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/publishers:
+    get:
+      tags:
+        - publishers
+      summary: List of all publishers
+      description: Use to get the list of all publishers
+      operationId: App\Http\Controllers\PublisherController::getList
+      parameters:
+        - name: q
+          in: query
+          description: values to filter returned data
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: order
+          in: query
+          description: 'type of order: ASC, DESC'
+          required: false
+          schema:
+            type: string
+        - name: orderBy
+          in: query
+          description: 'field to order: id - name(default) - host - created_at - updated_at'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+    post:
+      tags:
+        - publishers
+      summary: Save new publisher
+      description: Use to store a new publisher
+      operationId: App\Http\Controllers\PublisherController::store
+      requestBody:
+        description: Publisher object that needs to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Publisher'
+      responses:
+        '201':
+          $ref: '#/components/responses/Success201'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/publishers/{id}:
+    get:
+      tags:
+        - publishers
+      summary: Find a publisher by id
+      description: Use to get a publisher by id
+      operationId: PublisherController.getPublisher
+      parameters:
+        - name: id
+          in: path
+          description: publisher id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+    delete:
+      tags:
+        - publishers
+      summary: Delete the publisher
+      description: Insert the publisher id that you want to delete
+      operationId: PublisherController.destroy
+      parameters:
+        - name: id
+          in: path
+          description: publisher id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/subscribers:
+    get:
+      tags:
+        - subscribers
+      summary: List of all subscribers
+      description: Use to get the list of all subscribers
+      operationId: App\Http\Controllers\SubscriberController::getList
+      parameters:
+        - name: q
+          in: query
+          description: values to filter returned data
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: order
+          in: query
+          description: 'type of order: ASC, DESC'
+          required: false
+          schema:
+            type: string
+        - name: orderBy
+          in: query
+          description: 'field to order: id - name(default) - host - created_at - updated_at'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+    post:
+      tags:
+        - subscribers
+      summary: Save new subscriber
+      description: Use to store a new subscriber
+      operationId: App\Http\Controllers\SubscriberController::store
+      requestBody:
+        description: Subscriber object that needs to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subscriber'
+      responses:
+        '201':
+          $ref: '#/components/responses/Success201'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/subscribers/{id}:
+    get:
+      tags:
+        - subscribers
+      summary: Find a subscriber by id
+      description: Use to get a subscriber by id
+      operationId: SubscriberController.getSubscriber
+      parameters:
+        - name: id
+          in: path
+          description: Subscriber id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+    delete:
+      tags:
+        - subscribers
+      summary: Delete the subscriber
+      description: Insert the subscriber id that you want to delete
+      operationId: App\Http\Controllers\SubscriberController::destroy
+      parameters:
+        - name: id
+          in: path
+          description: subscriber id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/Success200'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+components:
+  schemas:
+    Message500:
+      properties:
+        message:
+          type: string
+          default: System error
+      type: object
+    Message404:
+      properties:
+        message:
+          type: string
+          default: Object not found
+      type: object
+    ChannelSubscribe:
+      required:
+        - channel_id
+        - endpoint
+        - authentication
+      properties:
+        channel_id:
+          type: integer
+          example: 1
+        endpoint:
+          type: string
+          example: api/test
+        authentication:
+          type: string
+          default: NONE
+          enum:
+            - NONE
+            - OAUTH2
+            - BASIC
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+      type: object
+    Subscriber:
+      properties:
+        name:
+          type: string
+          example: subscriber1
+        host:
+          type: string
+          example: https://host1-test
+      type: object
+    Publisher:
+      properties:
+        name:
+          type: string
+          example: publisher1
+        host:
+          type: string
+          example: https://publisher1-test
+        username:
+          type: string
+          example: username
+        password:
+          type: string
+          example: password
+      type: object
+    Channel:
+      properties:
+        name:
+          type: string
+          example: channel1
+        priority:
+          type: string
+          enum:
+            - high
+            - medium
+            - low
+            - default
+          example: default
+      type: object
+    ChannelPublish:
+      required:
+        - channel_id
+      properties:
+        channel_id:
+          type: integer
+          example: 1
+      type: object
+    SendMessage:
+      required:
+        - channel
+        - message
+      properties:
+        channel:
+          type: string
+          example: canale1
+        message:
+          type: string
+          example: messaggio di prova
+      type: object
+    Message:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: messaggio di prova
+      type: object
+  responses:
+    Error500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message500'
+    Error404:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message404'
+    Error409:
+      description: Conflict
+      content:
+        application/json: {}
+    Success200:
+      description: Operation successful
+      content:
+        application/json: {}
+    Success201:
+      description: Created
+      content:
+        application/json: {}
+    Success204:
+      description: No Content
+      content:
+        application/json: {}
+    Error422:
+      description: 'Unprocessable entity: data validation error'
+      content:
+        application/json: {}
+  securitySchemes:
+    basicAuth:
+      type: http
+      name: Authorization
+      in: header
+      scheme: basic
+tags:
+  - name: channels
+    description: Channels methods
+security:
+  - []
