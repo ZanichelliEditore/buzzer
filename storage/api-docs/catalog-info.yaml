@@ -3,6 +3,8 @@ kind: API
 metadata:
   name: buzzer
   description: The Buzzer app
+  tags:
+    - buzzer
   annotations:
     # The annotation is deprecated, we use placeholders (see below) instead, remove it later.
     backstage.io/definition-at-location: 'url:https://raw.githubusercontent.com/ZanichelliEditore/buzzer/blob/MLPR-240_backstage_io/storage/api-docs/api-docs.yaml'
