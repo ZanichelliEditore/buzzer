@@ -11,10 +11,9 @@
         "php": "^8.1",
         "darkaonline/l5-swagger": "^8.3",
         "doctrine/dbal": "^3.0",
-        "fideloper/proxy": "^4.0",
-        "laravel/framework": "^9.0",
+        "laravel/framework": "^10.0",
         "laravel/legacy-factories": "^1.1",
-        "laravel/passport": "^10.4.1",
+        "laravel/passport": "^11.0",
         "laravel/telescope": "^4.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^4.0",
@@ -28,8 +27,8 @@
         "fakerphp/faker": "^1.21",
         "filp/whoops": "^2.0",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.0"
+        "nunomaduro/collision": "^7.0",
+        "phpunit/phpunit": "^10.0"
     },
     "config": {
         "optimize-autoloader": true,
@@ -58,7 +57,7 @@
             "Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "scripts": {
         "post-autoload-dump": [

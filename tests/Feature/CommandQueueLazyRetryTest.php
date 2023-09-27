@@ -39,7 +39,7 @@ class CommandQueueLazyRetryTest extends TestCaseWithoutMiddleware
         Queue::assertPushed(QueuedCommand::class, $commandCount);
     }
 
-    public function lazyRetryJobsProvider()
+    static function lazyRetryJobsProvider()
     {
         return [
             [0, 0],
