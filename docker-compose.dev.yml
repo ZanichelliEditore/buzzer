@@ -62,7 +62,7 @@ services:
         max-size: 5m
         max-file: "3"
   database:
-    image: mysql:5.7
+    image: mysql:8
     container_name: buzzer_db
     environment:
       - "MYSQL_ROOT_PASSWORD=secret"
