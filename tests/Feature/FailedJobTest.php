@@ -47,6 +47,7 @@ class FailedJobTest extends TestCaseWithoutMiddleware
             ->getMock();
         $this->app->instance('App\Http\Repositories\FailedJobRepository', $mock);
         $response = $this->json('GET', '/api/failedJobs');
+        dd($response);
 
         $response->assertStatus(200)->assertJsonFragment($this->getJsonFragment($failedJob));
     }
