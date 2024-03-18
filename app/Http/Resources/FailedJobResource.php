@@ -15,14 +15,20 @@ class FailedJobResource extends JsonResource
      */
     public function toArray($request)
     {
-        $channelSubscribe = unserialize(json_decode($this->payload)->data->command)->getEvent()->channelSubscribe;
+        $channelSubscribe = null;
+        $payload = json_decode($this->payload);
+
+        if (isset($payload->data->command)) {
+            $channelSubscribe = unserialize(json_decode($this->payload)->data->command)->getEvent()->channelSubscribe;
+        }
+
         return [
             'id' => $this->id,
             'payload' => $this->payload,
             'exception' => $this->exception,
             'failed_at' => $this->failed_at,
-            'subscriber' => $channelSubscribe->subscriber->name,
-            'channel' => $channelSubscribe->channel->name
+            'subscriber' => $channelSubscribe ? $channelSubscribe->subscriber->name : '',
+            'channel' => $channelSubscribe ? $channelSubscribe->channel->name : ''
         ];
     }
 }
