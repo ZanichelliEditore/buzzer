@@ -19,7 +19,7 @@ class FailedJobResource extends JsonResource
         $payload = json_decode($this->payload);
 
         if (isset($payload->data->command)) {
-            $channelSubscribe = unserialize(json_decode($this->payload)->data->command)->getEvent()->channelSubscribe;
+            $channelSubscribe = unserialize($payload->data->command)->getEvent()->channelSubscribe;
         }
 
         return [
