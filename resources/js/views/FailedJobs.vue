@@ -95,14 +95,12 @@ export default defineComponent({
         {
             label: "Subscriber",
             field: "subscriber",
-            orderby: "subscriber",
             type: "text",
             dimension: "medium",
         },
         {
             label: "Channel",
             field: "channel",
-            orderby: "channel",
             type: "text",
             dimension: "medium",
         },
