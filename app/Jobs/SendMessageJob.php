@@ -64,4 +64,9 @@ class SendMessageJob implements ShouldQueue
                 break;
         }
     }
+
+    public function getEvent(): SendMessageEvent
+    {
+        return $this->event;
+    }
 }

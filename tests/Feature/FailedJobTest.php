@@ -3,14 +3,18 @@
 namespace Tests\Feature;
 
 use Mockery;
+use App\Models\Message;
 use App\Models\FailedJob;
+use App\Jobs\SendMessageJob;
+use App\Events\SendMessageEvent;
+use App\Models\ChannelSubscribe;
 use Illuminate\Pagination\Paginator;
-use App\Http\Repositories\FailedJobRepository;
 use Tests\TestCaseWithoutMiddleware;
+use App\Http\Repositories\FailedJobRepository;
 
 class FailedJobTest extends TestCaseWithoutMiddleware
 {
-    private function getJsonFragment(FailedJob $failedJob = null): array
+    private function getJsonFragment(FailedJob $failedJob = null, ChannelSubscribe $channelSubscribe = null): array
     {
         if (is_null($failedJob)) {
             return [
@@ -24,7 +28,9 @@ class FailedJobTest extends TestCaseWithoutMiddleware
                     "exception" => $failedJob->exception,
                     "failed_at" => $failedJob->failed_at,
                     "id" => $failedJob->id,
-                    "payload" => $failedJob->payload
+                    "payload" => $failedJob->payload,
+                    "subscriber" => $channelSubscribe ? $channelSubscribe->subscriber->name : '',
+                    "channel" => $channelSubscribe ? $channelSubscribe->channel->name : ''
                 ]
             ]
         ];
@@ -36,7 +42,13 @@ class FailedJobTest extends TestCaseWithoutMiddleware
      */
     public function testSuccesfullyListFailedJob()
     {
-        $failedJob = factory(FailedJob::class)->make();
+        $channelSubscribe = factory(ChannelSubscribe::class)->create();
+        $sendMessageJob = new SendMessageJob(new SendMessageEvent(new Message('messaggio'), 'host', $channelSubscribe, 'highpriority'));
+
+        $failedJob = factory(FailedJob::class)->make([
+            'payload' => json_encode(["data" => ["command" => serialize($sendMessageJob)]]),
+
+        ]);
 
         $paginator = new Paginator([$failedJob], 12, 1);
         $mock = Mockery::mock(FailedJobRepository::class)->makePartial()
@@ -48,7 +60,7 @@ class FailedJobTest extends TestCaseWithoutMiddleware
         $this->app->instance('App\Http\Repositories\FailedJobRepository', $mock);
         $response = $this->json('GET', '/api/failedJobs');
 
-        $response->assertStatus(200)->assertJsonFragment($this->getJsonFragment($failedJob));
+        $response->assertStatus(200)->assertJsonFragment($this->getJsonFragment($failedJob, $channelSubscribe));
     }
 
     /**
