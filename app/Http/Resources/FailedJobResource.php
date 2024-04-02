@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FailedJobResource extends JsonResource
@@ -15,11 +16,14 @@ class FailedJobResource extends JsonResource
      */
     public function toArray($request)
     {
-        $channelSubscribe = null;
         $payload = json_decode($this->payload);
 
         if (isset($payload->data->command)) {
+            try {
             $channelSubscribe = unserialize($payload->data->command)->getEvent()->channelSubscribe;
+            } catch (ModelNotFoundException) {
+                $channelSubscribe = null;
+            }
         }
 
         return [
