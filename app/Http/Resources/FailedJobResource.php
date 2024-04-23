@@ -24,7 +24,7 @@ class FailedJobResource extends JsonResource
             try {
                 $channelSubscribe = unserialize($payload->data->command)->getEvent()->channelSubscribe;
             } catch (ModelNotFoundException) {
-                Log::error('[FAILED JOB RESOURCE] Model not found');
+                Log::warning('[FAILED JOB RESOURCE] Model not found');
             }
         }
 
