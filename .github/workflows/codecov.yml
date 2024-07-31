@@ -6,6 +6,7 @@ on:
       - opened
     branches:
       - "master"
+      - "develop"
   push:
     branches:
       - "master"

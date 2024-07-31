@@ -93,6 +93,18 @@ export default defineComponent({
           dimension: "small",
         },
         {
+            label: "Subscriber",
+            field: "subscriber",
+            type: "text",
+            dimension: "medium",
+        },
+        {
+            label: "Channel",
+            field: "channel",
+            type: "text",
+            dimension: "medium",
+        },
+        {
           label: "Payload",
           field: "payload",
           orderby: "payload",
