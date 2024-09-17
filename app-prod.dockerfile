@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y wget libmcrypt-dev mariadb-client \
     openssl zip unzip git nano wget libaio-dev iputils-ping
 
 
-RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install pdo_mysql opcache
 
 RUN apt-get install -y supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
