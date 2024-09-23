@@ -123,6 +123,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
+            'persistent' => true
         ],
         'default' => [
             'host' => env('REDIS_HOST', '127.0.0.1'),
