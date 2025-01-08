@@ -46,10 +46,16 @@ class QueueLazyRetry extends Command
         $jobsBatches = $this->failedJobRepository->all(null, "id", "ASC", 1000)->pluck("id")->chunk(50);
         $delay = 0;
         foreach ($jobsBatches as $batch) {
-            Artisan::queue('queue:retry ' . $batch->implode(" "))->delay($delay);
+            Artisan::queue('queue:retry ' . $batch->implode(" "))->onQueue($this->getQueue())->delay($delay);
             $delay += 30;
         }
 
         return 0;
+    }
+
+    private function getQueue(): string
+    {
+        if (config('queue.default') === "redis") return "{default}";
+        return "default";
     }
 }
