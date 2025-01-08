@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y wget libmcrypt-dev mariadb-client opens
     && docker-php-ext-install gd \
     && pecl install xdebug-3.1.5 \
     && docker-php-ext-enable xdebug
+RUN pecl install redis
+RUN docker-php-ext-enable redis
 
 COPY docker/php/custom-dev.d /usr/local/etc/php/conf.d
 
