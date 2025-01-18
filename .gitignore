@@ -21,3 +21,6 @@ auth.json
 /public/vendors*.js
 /public/vendor/*
 /public/build/*
+/caddy
+frankenphp
+frankenphp-worker.php
