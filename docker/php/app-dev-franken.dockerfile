@@ -7,6 +7,9 @@ RUN apt-get update && apt-get install -y wget libmcrypt-dev mariadb-client opens
     && docker-php-ext-install gd \
     && pecl install xdebug-3.1.5 \
     && docker-php-ext-enable xdebug
+
+RUN docker-php-ext-install opcache
+
 RUN pecl install redis
 RUN docker-php-ext-enable redis
 RUN docker-php-ext-install pcntl
