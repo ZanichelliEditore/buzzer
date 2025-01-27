@@ -20,6 +20,7 @@ COPY docker/php/custom.d/prod-php-fpm.conf /usr/local/etc/php-fpm.d/zz-prod-php-
 COPY docker/php/custom.d /usr/local/etc/php/conf.d
 
 COPY --chown=www-data:www-data ./ /var/www
+RUN chown www-data:www-data /var/www
 
 WORKDIR /var/www
 
