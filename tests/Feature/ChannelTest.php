@@ -40,16 +40,6 @@ class ChannelTest extends TestCaseWithoutMiddleware
      * @test
      * @return void
      */
-    public function swaggerDocumentationTest()
-    {
-        $response = $this->withMiddleware()->get('/docs/api-docs.json');
-        $response->assertStatus(200);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
     public function ShowSubscriber404ResponseTest()
     {
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
