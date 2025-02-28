@@ -35,6 +35,20 @@ class SendMessageJob implements ShouldQueue
     public $backoff = 60;
 
     /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 30;
+
+    /**
+     * Indicate if the job should be marked as failed on timeout.
+     *
+     * @var bool
+     */
+    public $failOnTimeout = true;
+
+    /**
      * Create a new job instance.
      * @param SendMessageEvent $event
      * @return void
