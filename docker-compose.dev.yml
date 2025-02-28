@@ -110,4 +110,4 @@ networks:
     ipam:
       config:
         - subnet: 10.100.0.0/16
-          ip_range: 10.101.0.0/16
+          ip_range: 10.100.0.0/16
