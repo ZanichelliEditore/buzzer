@@ -12,7 +12,10 @@ class GuzzleService
 
     public function __construct()
     {
-        $this->client = new Client();
+        $this->client = new Client([
+            'timeout' => config("queue.timeout"),
+            'connect_timeout' => config("queue.timeout"),
+        ]);
     }
 
     /**
