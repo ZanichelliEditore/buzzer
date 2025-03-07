@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y wget libmcrypt-dev mariadb-client opens
 RUN pecl install redis
 RUN docker-php-ext-enable redis
 
+#pcntl needed to enable queue timeout
+RUN docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl
+
 COPY docker/php/custom-dev.d /usr/local/etc/php/conf.d
 
 RUN mkdir -p /home/$USER
