@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 
 RUN apt-get update && apt-get install -y wget libmcrypt-dev mariadb-client \
     xvfb libfontconfig wkhtmltopdf libxslt1-dev libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 gnupg libcanberra-gtk-module\
