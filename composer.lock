@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3336e298999d8bb87c0ff470bba79a16",
+    "content-hash": "16aa285474b6c227cd13d1897b2a26ac",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7462,12 +7462,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZanichelliEditore/health-check.git",
-                "reference": "3289e5"
+                "reference": "fe3fa9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZanichelliEditore/health-check/zipball/3289e5",
-                "reference": "3289e5",
+                "url": "https://api.github.com/repos/ZanichelliEditore/health-check/zipball/fe3fa9",
+                "reference": "fe3fa9",
                 "shasum": ""
             },
             "require": {
@@ -7476,7 +7476,7 @@
             },
             "require-dev": {
                 "mockery/mockery": "^1.0",
-                "orchestra/testbench": "^3.8",
+                "orchestra/testbench": "^10.0",
                 "phpunit/phpunit": "^12.0"
             },
             "type": "library",
@@ -7507,7 +7507,7 @@
                 "issues": "https://github.com/ZanichelliEditore/health-check/issues",
                 "source": "https://github.com/ZanichelliEditore/health-check/tree/BZR-69"
             },
-            "time": "2025-04-04T16:45:25+00:00"
+            "time": "2025-04-11T15:21:38+00:00"
         },
         {
             "name": "zanichelli/idp-extensions",
