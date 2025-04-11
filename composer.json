@@ -10,14 +10,14 @@
     "require": {
         "php": "^8.1",
         "darkaonline/l5-swagger": "^8.3",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^12.0",
         "laravel/legacy-factories": "^1.1",
         "laravel/passport": "^12.0",
         "laravel/telescope": "^5.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^4.0",
-        "zanichelli/healthcheck": "^1.1",
-        "zanichelli/idp-extensions": "^3.0",
+        "zanichelli/healthcheck": "dev-BZR-69#3289e5",
+        "zanichelli/idp-extensions": "^3.7",
         "zircote/swagger-php": "4.*"
     },
     "require-dev": {
@@ -26,7 +26,7 @@
         "filp/whoops": "^2.0",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^8.1",
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^11.0"
     },
     "config": {
         "optimize-autoloader": true,

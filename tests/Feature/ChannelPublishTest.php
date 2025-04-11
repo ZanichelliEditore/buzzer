@@ -14,7 +14,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 {
     const ID_NOT_VALID = 99999999;
 
-    public function getChannelPublishDetailJson()
+    public static function getChannelPublishDetailJson()
     {
         return [
             "id",
@@ -32,11 +32,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
         ];
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failSaveTest()
+    public function testFailSave()
     {
         $channelPublish = factory(ChannelPublish::class)->make();
         $request = [
@@ -63,12 +59,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-
-    /**
-     * @test
-     * @return void
-     */
-    public function showNoRegistrationTest()
+    public function testShowNoRegistration()
     {
         $subscriber = factory(Publisher::class)->make();
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
@@ -83,11 +74,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failfindPublisherTest()
+    public function testFailfindPublisher()
     {
         $channelPublish = factory(ChannelPublish::class)->make();
         $request = [
@@ -107,11 +94,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
         $response->assertStatus(422);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function duplicatePublisherTest()
+    public function testDuplicatePublisher()
     {
         $channelPublish = factory(ChannelPublish::class)->make();
         $request = [
@@ -132,11 +115,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
         $response->assertStatus(409);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyNotFound()
+    public function testDestroyNotFound()
     {
         $mock = Mockery::mock(ChannelPublishRepository::class)->makePartial()
             ->shouldReceive([
@@ -150,11 +129,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failDestroyTest()
+    public function testFailDestroy()
     {
         $channelPublish = factory(ChannelPublish::class)->make();
         $mock = Mockery::mock(ChannelPublishRepository::class)->makePartial()
@@ -170,11 +145,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyTest()
+    public function testDestroy()
     {
         $channelPublish = factory(ChannelPublish::class)->make();
         $mock = Mockery::mock(ChannelPublishRepository::class)->makePartial()

@@ -26,11 +26,7 @@ class MessageTest extends TestCase
 
     const PUBLISHER_PASSWORD = 'password';
 
-    /**
-     * @test
-     * @return void
-     */
-    public function SendMessageTest()
+    public function testSendMessage()
     {
         Queue::fake();
         $channel = factory(Channel::class)->create();
@@ -52,11 +48,7 @@ class MessageTest extends TestCase
         Queue::assertPushed(SendMessageJob::class, 2);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function SendMessageWithBasicAuthTest()
+    public function testSendMessageWithBasicAuth()
     {
         $channel = factory(Channel::class)->create();
         $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
@@ -83,11 +75,7 @@ class MessageTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function SendMessageWithoutAuthTest()
+    public function testSendMessageWithoutAuth()
     {
         $channel = factory(Channel::class)->create();
         $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
@@ -115,11 +103,7 @@ class MessageTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function DoubleSubscriptionTest()
+    public function testDoubleSubscription()
     {
         Queue::fake();
         $channel = factory(Channel::class)->create();
@@ -142,11 +126,7 @@ class MessageTest extends TestCase
         Queue::assertPushed(SendMessageJob::class, 4);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function sendMessagePublisherNotHasChannel()
+    public function testSendMessagePublisherNotHasChannel()
     {
         $channel = factory(Channel::class)->create();
         $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
@@ -172,11 +152,7 @@ class MessageTest extends TestCase
             ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function basicAuthMissingCredentials()
+    public function testBasicAuthMissingCredentials()
     {
         $authorization = [
             'PHP_AUTH_USER' => '',
@@ -189,11 +165,7 @@ class MessageTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function basicAuthMissingPublisherUsername()
+    public function testBasicAuthMissingPublisherUsername()
     {
         $authorization = [
             'PHP_AUTH_USER' => Str::random(50),
@@ -205,11 +177,7 @@ class MessageTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function basicAuthFailedAuth()
+    public function testBasicAuthFailedAuth()
     {
         $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
 

@@ -14,7 +14,7 @@ use App\Http\Repositories\FailedJobRepository;
 
 class FailedJobTest extends TestCaseWithoutMiddleware
 {
-    private function getJsonFragment(FailedJob $failedJob = null, ChannelSubscribe $channelSubscribe = null): array
+    private function getJsonFragment(?FailedJob $failedJob = null, ?ChannelSubscribe $channelSubscribe = null): array
     {
         if (is_null($failedJob)) {
             return [
@@ -36,10 +36,6 @@ class FailedJobTest extends TestCaseWithoutMiddleware
         ];
     }
 
-    /**
-     * @test
-     * @return void
-     */
     public function testSuccesfullyListFailedJob()
     {
         $channelSubscribe = factory(ChannelSubscribe::class)->create();
@@ -63,10 +59,6 @@ class FailedJobTest extends TestCaseWithoutMiddleware
         $response->assertStatus(200)->assertJsonFragment($this->getJsonFragment($failedJob, $channelSubscribe));
     }
 
-    /**
-     * @test
-     * @return void
-     */
     public function testListFailedJobInvalidData()
     {
         $paginator = new Paginator([], 12, 1);
@@ -88,11 +80,6 @@ class FailedJobTest extends TestCaseWithoutMiddleware
         $response->assertStatus(422)->assertJsonFragment(["errors" => ["orderBy" => ["The selected order by is invalid."]], "message" => "Data is invalid"]);
     }
 
-
-    /**
-     * @test
-     * @return void
-     */
     public function testListNoFailedJob()
     {
         $paginator = new Paginator([], 12, 1);
@@ -107,11 +94,6 @@ class FailedJobTest extends TestCaseWithoutMiddleware
         $response->assertStatus(200)->assertJsonFragment($this->getJsonFragment());
     }
 
-
-    /**
-     * @test
-     * @return void
-     */
     public function testDestroyUnrealFailedJob()
     {
         $mock = Mockery::mock(FailedJobRepository::class)->makePartial()
@@ -125,10 +107,6 @@ class FailedJobTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
     public function testRetryUnrealFailedJob()
     {
         $mock = Mockery::mock(FailedJobRepository::class)->makePartial()

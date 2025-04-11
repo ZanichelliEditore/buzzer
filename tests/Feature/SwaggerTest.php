@@ -14,7 +14,7 @@ class SwaggerTest extends TestCaseWithoutMiddleware
 
         Artisan::call("l5-swagger:generate");
 
-        $response = $this->withMiddleware()->get('/docs/api-docs.json');
+        $response = $this->withMiddleware()->get('/docs?api-docs.json');
         $response->assertStatus(200);
     }
 

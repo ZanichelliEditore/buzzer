@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Str;
 use Tests\Feature\SubscriberTest as SubscriberFeatureTest;
 use Tests\TestCaseWithoutMiddleware;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class SubscriberTest extends TestCaseWithoutMiddleware
 {
@@ -20,11 +21,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         ]
     ];
 
-    /**
-     * @test
-     * @return void
-     */
-    public function validationErrorTest()
+    public function testValidationError()
     {
         //Strings too long
         $response = $this->json('POST', '/api/subscribers', [
@@ -89,11 +86,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->assertJsonStructure(self::REQUEST_ERROR_ARRAY);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function listTest()
+    public function testList()
     {
         factory(Subscriber::class, 20)->create();
 
@@ -118,11 +111,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->assertJsonCount($limit, 'data');
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showTest()
+    public function testShow()
     {
         $subscriber = factory(Subscriber::class)->create();
         $response = $this->get('/api/subscribers/' . $subscriber->id);
@@ -132,31 +121,19 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showNotFoundTest()
+    public function testShowNotFound()
     {
         $response = $this->get('/api/subscribers/' . self::ID_NOT_VALID);
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyNotFoundTest()
+    public function testDestroyNotFound()
     {
         $response = $this->json('DELETE', '/api/subscribers/' . self::ID_NOT_VALID);
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyTest()
+    public function testDestroy()
     {
         $subscriber = factory(Subscriber::class)->create();
         $response = $this->json('DELETE', '/api/subscribers/' . $subscriber->id);
@@ -175,11 +152,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider getHost
-     * @return void
-     */
+    #[DataProvider('getHost')]
     public function addTest($host, $expectedHost)
     {
         $newSubscriber = factory(Subscriber::class)->make(['host' => $host]);

@@ -14,11 +14,7 @@ use Tests\TestCaseWithoutMiddleware;
 
 class MessageWithoutMiddlewareTest extends TestCaseWithoutMiddleware
 {
-    /**
-     * @test
-     * @return void
-     */
-    public function SendMessageNoDataTest()
+    public function testSendMessageNoData()
     {
         Queue::fake();
         $request = [
@@ -49,11 +45,7 @@ class MessageWithoutMiddlewareTest extends TestCaseWithoutMiddleware
         Queue::assertNotPushed(SendMessageJob::class);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function SendMessageChannelNotExistTest()
+    public function testSendMessageChannelNotExist()
     {
         Queue::fake();
         $request = [
@@ -75,11 +67,7 @@ class MessageWithoutMiddlewareTest extends TestCaseWithoutMiddleware
         Queue::assertNotPushed(SendMessageJob::class);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function SendMessageDataNotValidTest()
+    public function testSendMessageDataNotValid()
     {
         Queue::fake();
         $request = [
@@ -110,11 +98,7 @@ class MessageWithoutMiddlewareTest extends TestCaseWithoutMiddleware
         Queue::assertNotPushed(SendMessageJob::class);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function SendMessageTest()
+    public function testSendMessage()
     {
         Queue::fake();
         $channel = factory(Channel::class)->create();
@@ -139,11 +123,7 @@ class MessageWithoutMiddlewareTest extends TestCaseWithoutMiddleware
         Queue::assertPushed(SendMessageJob::class, 2);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function DoubleSubscriptionTest()
+    public function testDoubleSubscription()
     {
         Queue::fake();
         $channel = factory(Channel::class)->create();
@@ -168,11 +148,7 @@ class MessageWithoutMiddlewareTest extends TestCaseWithoutMiddleware
         Queue::assertPushed(SendMessageJob::class, 4);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function SendMessageWithOAuth2Test()
+    public function testSendMessageWithOAuth2()
     {
         $channel = factory(Channel::class)->create();
         factory(ChannelSubscribe::class)->create(['channel_id' => $channel->id, 'authentication' => 'OAUTH2']);

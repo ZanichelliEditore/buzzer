@@ -21,11 +21,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
         ]
     ];
 
-    /**
-     * @test
-     * @return void
-     */
-    public function addTest()
+    public function testAdd()
     {
         $newPublisher = factory(Publisher::class)->make();
         $response = $this->json('POST', '/api/publishers/', $newPublisher->toArray());
@@ -36,11 +32,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
         $this->assertDatabaseHas('publishers', $newPublisher->toArray());
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showTest()
+    public function testShow()
     {
         $publisher = factory(Publisher::class)->create();
         $response = $this->get('/api/publishers/' . $publisher->id);
@@ -50,17 +42,13 @@ class PublisherTest extends TestCaseWithoutMiddleware
             ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showNotFoundTest()
+    public function testShowNotFound()
     {
         $response = $this->get('/api/publishers/' . self::ID_NOT_VALID);
         $response->assertStatus(404);
     }
 
-    public function validationErrorTest()
+    public function testValidationError()
     {
         //Strings too long
         $response = $this->json('POST', '/api/publishers', [
@@ -132,21 +120,13 @@ class PublisherTest extends TestCaseWithoutMiddleware
             ->assertJsonStructure(self::REQUEST_ERROR_ARRAY);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyNotFoundTest()
+    public function testDestroyNotFound()
     {
         $response = $this->json('DELETE', '/api/publishers/' . self::ID_NOT_VALID);
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyTest()
+    public function testDestroy()
     {
         $publisher = factory(Publisher::class)->create();
         $response = $this->json('DELETE', '/api/publishers/' . $publisher->id);
@@ -156,11 +136,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
         ]);
     }
 
-     /**
-     * @test
-     * @return void
-     */
-    public function listTest()
+    public function testlist()
     {
         factory(Publisher::class, 20)->create();
 

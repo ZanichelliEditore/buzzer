@@ -10,11 +10,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 {
     const ID_NOT_VALID = 99999999;
 
-    /**
-     * @test
-     * @return void
-     */
-    public function addTest()
+    public function testAdd()
     {
         $newChannelPublish = factory(ChannelPublish::class)->make();
         $request = [
@@ -27,11 +23,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
         $this->assertDatabaseHas('channel_publish', $newChannelPublish->toArray());
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showTest()
+    public function testShow()
     {
         $channelPublish = factory(ChannelPublish::class)->create();
         $response = $this->json('GET', '/api/publishers/' . $channelPublish->publisher_id . '/channels');
@@ -41,21 +33,13 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
             ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showNotFoundTest()
+    public function testShowNotFound()
     {
         $response = $this->get('/api/subscribers/' . self::ID_NOT_VALID . '/channels');
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyTest()
+    public function testDestroy()
     {
         $channelPublish = factory(ChannelPublish::class)->create();
         $response = $this->json(
