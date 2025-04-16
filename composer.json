@@ -16,7 +16,7 @@
         "laravel/telescope": "^5.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^4.0",
-        "zanichelli/healthcheck": "dev-BZR-69#438ade",
+        "zanichelli/healthcheck": "dev-BZR-69#e92539",
         "zanichelli/idp-extensions": "^3.7",
         "zircote/swagger-php": "4.*"
     },
