@@ -13,6 +13,13 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    # Configure the MySQL service
+    services:
+      mysql:
+        image: mysql:8
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v3
       - name: Init application
