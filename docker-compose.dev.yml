@@ -67,7 +67,7 @@ services:
       - "MYSQL_ROOT_PASSWORD=secret"
       - "MYSQL_DATABASE=buzzer"
     ports:
-      - "33064:3306"
+      - "33065:3306"
     networks:
       static-network:
         ipv4_address: 10.100.0.4
