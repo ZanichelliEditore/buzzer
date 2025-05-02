@@ -21,8 +21,8 @@ jobs:
           MYSQL_ROOT_PASSWORD: secret
           MYSQL_DATABASE: buzzer
         ports:
-          - 33065:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 
     steps:
       - uses: actions/checkout@v3
       - name: Init application
@@ -31,9 +31,12 @@ jobs:
           docker compose -f docker-compose.dev.yml up --build -d
           docker exec -i -u root buzzer_app composer install
           docker exec -i -u root buzzer_app php artisan key:generate
+      - name: Init database
+        run: |
           docker exec -i -u root buzzer_app php artisan migrate
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+        options: --depends-on=mysql
       - name: Run tests and generate xml report
         run: docker exec -i -u root buzzer_app vendor/bin/phpunit --coverage-clover=coverage.xml
       - name: Upload coverage reports to Codecov
