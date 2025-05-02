@@ -13,16 +13,6 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    services:
-      # Configure the MySQL service
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: secret
-          MYSQL_DATABASE: buzzer
-        ports:
-          - 33064:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 
     steps:
       - uses: actions/checkout@v3
       - name: Init application
@@ -34,12 +24,12 @@ jobs:
       - name: Init database
         run: docker exec -i -u root buzzer_app php artisan migrate
         env:
-          DB_HOST: mysql
+          DB_HOST: buzzer_db
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Run tests and generate xml report
         run: docker exec -i -u root buzzer_app vendor/bin/phpunit --coverage-clover=coverage.xml
         env:
-          DB_HOST: mysql
+          DB_HOST: buzzer_db
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
