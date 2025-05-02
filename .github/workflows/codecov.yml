@@ -13,15 +13,15 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    # Configure the MySQL service
     services:
+      # Configure the MySQL service
       mysql:
         image: mysql:8
         env:
           MYSQL_ROOT_PASSWORD: secret
           MYSQL_DATABASE: buzzer
         ports:
-          - 3306
+          - 33064:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 
     steps:
       - uses: actions/checkout@v3
@@ -32,8 +32,7 @@ jobs:
           docker exec -i -u root buzzer_app composer install
           docker exec -i -u root buzzer_app php artisan key:generate
       - name: Init database
-        run: |
-          docker exec -i -u root buzzer_app php artisan migrate
+        run: docker exec -i -u root buzzer_app php artisan migrate
         env:
           DB_HOST: mysql
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
