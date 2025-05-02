@@ -36,7 +36,6 @@ jobs:
           docker exec -i -u root buzzer_app php artisan migrate
         env:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-        options: --depends-on=mysql
       - name: Run tests and generate xml report
         run: docker exec -i -u root buzzer_app vendor/bin/phpunit --coverage-clover=coverage.xml
       - name: Upload coverage reports to Codecov
