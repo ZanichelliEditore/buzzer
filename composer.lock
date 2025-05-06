@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "daba4ea487edba3a8d0fab562d8c2358",
+    "content-hash": "dd85b2f41d992d86551a6bf9b1540275",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.343.3",
+            "version": "3.343.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "d7ad5f6bdee792a16d2c9d5a3d9b56acfaaaf979"
+                "reference": "735a810caf3f48d6da7d4887e2c904ead7ed326e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d7ad5f6bdee792a16d2c9d5a3d9b56acfaaaf979",
-                "reference": "d7ad5f6bdee792a16d2c9d5a3d9b56acfaaaf979",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/735a810caf3f48d6da7d4887e2c904ead7ed326e",
+                "reference": "735a810caf3f48d6da7d4887e2c904ead7ed326e",
                 "shasum": ""
             },
             "require": {
@@ -153,9 +153,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.343.3"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.343.4"
             },
-            "time": "2025-05-02T18:04:58+00:00"
+            "time": "2025-05-05T18:06:12+00:00"
         },
         {
             "name": "brick/math",
@@ -2295,16 +2295,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.6.2",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "06c3b0bf2540338094575612f4a1778d0d2d5e94"
+                "reference": "6fbb36d44824ed4091adbcf4c7d4a3923cdb3405"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/06c3b0bf2540338094575612f4a1778d0d2d5e94",
-                "reference": "06c3b0bf2540338094575612f4a1778d0d2d5e94",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/6fbb36d44824ed4091adbcf4c7d4a3923cdb3405",
+                "reference": "6fbb36d44824ed4091adbcf4c7d4a3923cdb3405",
                 "shasum": ""
             },
             "require": {
@@ -2341,7 +2341,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.7-dev"
+                    "dev-main": "2.8-dev"
                 }
             },
             "autoload": {
@@ -2398,7 +2398,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-04-18T21:09:27+00:00"
+            "time": "2025-05-05T12:20:28+00:00"
         },
         {
             "name": "league/config",
@@ -7459,16 +7459,16 @@
         },
         {
             "name": "zanichelli/healthcheck",
-            "version": "dev-BZR-69",
+            "version": "v1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZanichelliEditore/health-check.git",
-                "reference": "e92539"
+                "reference": "0a283d20d65bcc2e24cc69a776bb5ad0f6918d8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZanichelliEditore/health-check/zipball/e92539",
-                "reference": "e92539",
+                "url": "https://api.github.com/repos/ZanichelliEditore/health-check/zipball/0a283d20d65bcc2e24cc69a776bb5ad0f6918d8f",
+                "reference": "0a283d20d65bcc2e24cc69a776bb5ad0f6918d8f",
                 "shasum": ""
             },
             "require": {
@@ -7506,9 +7506,9 @@
             "description": "Health check package provides security target for the project",
             "support": {
                 "issues": "https://github.com/ZanichelliEditore/health-check/issues",
-                "source": "https://github.com/ZanichelliEditore/health-check/tree/BZR-69"
+                "source": "https://github.com/ZanichelliEditore/health-check/tree/v1.1.6"
             },
-            "time": "2025-04-16T09:57:13+00:00"
+            "time": "2025-05-06T10:24:44+00:00"
         },
         {
             "name": "zanichelli/idp-extensions",
@@ -9721,9 +9721,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "zanichelli/healthcheck": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
