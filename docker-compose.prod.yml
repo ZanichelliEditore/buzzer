@@ -40,7 +40,7 @@ services:
       context: ./
       dockerfile: docker/node.dockerfile
       args:
-        - NODE_VERSION=16.18.1
+        - NODE_VERSION=22
     container_name: buzzer_nodejs
     volumes:
       - app:/var/www/

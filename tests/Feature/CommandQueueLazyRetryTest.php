@@ -8,15 +8,13 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use App\Http\Repositories\FailedJobRepository;
 use Illuminate\Foundation\Console\QueuedCommand;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCaseWithoutMiddleware;
 
 class CommandQueueLazyRetryTest extends TestCaseWithoutMiddleware
 {
-    /**
-     * @test
-     * @dataProvider lazyRetryJobsProvider
-     */
-    public function lazyRetryJobsTest($failedJobsCount, $commandCount)
+    #[DataProvider('lazyRetryJobsProvider')]
+    public function testLazyRetryJobs($failedJobsCount, $commandCount)
     {
         Queue::fake();
         $failedJobsCollection = new Collection();
@@ -39,7 +37,7 @@ class CommandQueueLazyRetryTest extends TestCaseWithoutMiddleware
         Queue::assertPushed(QueuedCommand::class, $commandCount);
     }
 
-    static function lazyRetryJobsProvider()
+    public static function lazyRetryJobsProvider()
     {
         return [
             [0, 0],

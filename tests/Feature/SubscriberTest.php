@@ -34,11 +34,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         ];
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function listTest()
+    public function testList()
     {
         $subscriber = factory(Subscriber::class)->make();
         $subscriber->id = 1;
@@ -58,11 +54,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->assertJsonStructure(['data' => [self::getSubscriberListJson()]]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function listNotFoundAnyObjects()
+    public function testListNotFoundAnyObjects()
     {
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
@@ -81,11 +73,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showTest()
+    public function testShow()
     {
         $subscriber = factory(Subscriber::class)->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
@@ -103,11 +91,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showNotFoundTest()
+    public function testShowNotFound()
     {
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
@@ -121,11 +105,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failSaveTest()
+    public function testFailSave()
     {
         $subscriber = factory(Subscriber::class)->make();
         $request = [
@@ -143,11 +123,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyNotFound()
+    public function testDestroyNotFound()
     {
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
@@ -161,11 +137,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failDestroyTest()
+    public function testFailDestroy()
     {
         $subscriber = factory(Subscriber::class)->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
@@ -181,11 +153,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyTest()
+    public function testDestroy()
     {
         $subscriber = factory(Subscriber::class)->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()

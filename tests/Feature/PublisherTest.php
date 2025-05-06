@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Mockery;
 use App\Models\Publisher;
-use Illuminate\Pagination\Paginator;
 use App\Http\Repositories\PublisherRepository;
 use Tests\TestCaseWithoutMiddleware;
 
@@ -37,11 +36,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
         ];
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function listTest()
+    public function testList()
     {
         $publisher = factory(Publisher::class)->make();
         $publisher->id = 1;
@@ -61,11 +56,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
             ->assertJsonStructure(['data' => [self::getPublisherListJson()]]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function listNotFoundAnyObjects()
+    public function testListNotFoundAnyObjects()
     {
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
             ->shouldReceive([
@@ -84,11 +75,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
             ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showTest()
+    public function testShow()
     {
         $publisher = factory(Publisher::class)->make();
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
@@ -106,11 +93,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
             ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showNotFoundTest()
+    public function testShowNotFound()
     {
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
             ->shouldReceive([
@@ -124,11 +107,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failSaveTest()
+    public function testFailSave()
     {
         $publisher = factory(Publisher::class)->make();
         $request = [
@@ -148,11 +127,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyNotFound()
+    public function testDestroyNotFound()
     {
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
             ->shouldReceive([
@@ -166,11 +141,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failDestroyTest()
+    public function testFailDestroy()
     {
         $publisher = factory(Publisher::class)->make();
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
@@ -186,11 +157,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyTest()
+    public function testDestroy()
     {
         $publisher = factory(Publisher::class)->make();
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()

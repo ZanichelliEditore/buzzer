@@ -1,11 +1,11 @@
-FROM php:8.1-fpm
+FROM php:8.4-fpm
 
 ARG USER
 
 RUN apt-get update && apt-get install -y wget libmcrypt-dev mariadb-client openssl zip unzip git libpng-dev libjpeg62-turbo-dev libgd-dev apt-utils \
     && docker-php-ext-install pdo_mysql \
     && docker-php-ext-install gd \
-    && pecl install xdebug-3.1.5 \
+    && pecl install xdebug \ 
     && docker-php-ext-enable xdebug
 RUN pecl install redis
 RUN docker-php-ext-enable redis
