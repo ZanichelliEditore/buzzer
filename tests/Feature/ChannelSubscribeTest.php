@@ -24,11 +24,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         ];
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failSaveTest()
+    public function testFailSave()
     {
         $channelSubscribe = factory(ChannelSubscribe::class)->make();
         $request = [
@@ -57,11 +53,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failCreateNotFoundTest()
+    public function testFailCreateNotFound()
     {
         $channelSubscribe = factory(ChannelSubscribe::class)->make();
         $request = [
@@ -83,11 +75,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         $response->assertStatus(422);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function duplicateSubscribetTest()
+    public function testDuplicateSubscribet()
     {
         $channelSubscribe = factory(ChannelSubscribe::class)->make();
         $request = [
@@ -111,11 +99,8 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         $response = $this->json('POST', '/api/subscribers/1/channels', $request);
         $response->assertStatus(409);
     }
-    /**
-     * @test
-     * @return void
-     */
-    public function showNoSubscriptionsTest()
+
+    public function testShowNoSubscriptions()
     {
         $subscriber = factory(Subscriber::class)->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
@@ -130,11 +115,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyNotFound()
+    public function testDestroyNotFound()
     {
         $mock = Mockery::mock(ChannelSubscribeRepository::class)->makePartial()
             ->shouldReceive([
@@ -148,11 +129,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failDestroyTest()
+    public function testFailDestroy()
     {
         $mock = Mockery::mock(ChannelSubscribeRepository::class)->makePartial()
             ->shouldReceive('find')
@@ -165,11 +142,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyTest()
+    public function testDestroy()
     {
         $channelSubscribe = factory(ChannelSubscribe::class)->make();
         $mock = Mockery::mock(ChannelSubscribeRepository::class)->makePartial()

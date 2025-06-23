@@ -36,11 +36,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         ];
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function ShowSubscriber404ResponseTest()
+    public function testShowSubscriber404Response()
     {
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
             ->shouldReceive([
@@ -54,11 +50,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function ShowSubscriber200ResponseTest()
+    public function testShowSubscriber200Response()
     {
         $channel = factory(Channel::class)->make();
         $channel->id = 1;
@@ -109,11 +101,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function ShowPublisher404ResponseTest()
+    public function testShowPublisher404Response()
     {
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
             ->shouldReceive([
@@ -127,11 +115,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function ShowPublisher200ResponseTest()
+    public function testShowPublisher200Response()
     {
         $channel = factory(Channel::class)->make();
         $publisher = factory(Publisher::class)->make();
@@ -160,11 +144,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function listTest()
+    public function testList()
     {
         $channel = factory(Channel::class)->make();
         $channel->id = 1;
@@ -185,11 +165,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
             ->assertJsonStructure(['data' => [$this->getChannelListJson()]]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function listNotFoundAnyObject()
+    public function testListNotFoundAnyObject()
     {
         $paginator = new Paginator([], 12, 1, [1, 1, 1, 1]);
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
@@ -205,11 +181,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
             ->assertJsonStructure(['data' => []]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showTest()
+    public function testShow()
     {
         $channel = factory(Channel::class)->make();
         $channel->id = 9999999999;
@@ -229,11 +201,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
             ->assertJsonStructure(['data' => $this->getChannelDetailJson()]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showNotFound()
+    public function testShowNotFound()
     {
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
             ->shouldReceive([
@@ -247,11 +215,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failSaveTest()
+    public function testFailSave()
     {
         $request = [
             'name' => Str::random(10),
@@ -269,11 +233,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function saveTest()
+    public function testSave()
     {
         $request = [
             'name' => Str::random(10),
@@ -292,11 +252,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         $response->assertStatus(201);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyNotFound()
+    public function testDestroyNotFound()
     {
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
             ->shouldReceive([
@@ -310,11 +266,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function SendMessageWithoutAuthTest()
+    public function testSendMessageWithoutAuth()
     {
         $channel = factory(Channel::class)->make();
 
@@ -331,11 +283,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function failDestroyTest()
+    public function testFailDestroy()
     {
         $channel = factory(Channel::class)->make();
 
@@ -352,11 +300,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         $response->assertStatus(500);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyTest()
+    public function testDestroy()
     {
         $channel = factory(Channel::class)->make();
 

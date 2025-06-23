@@ -10,11 +10,7 @@ use Tests\TestCaseWithoutMiddleware;
 
 class ChannelTest extends TestCaseWithoutMiddleware
 {
-    /**
-     * @test
-     * @return void
-     */
-    public function showSubscribersTest()
+    public function testShowSubscribers()
     {
         $channelSubscribe = factory(ChannelSubscribe::class)->create();
         $subscriber = Subscriber::find($channelSubscribe->subscriber_id);
@@ -47,11 +43,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
         ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showPublishersTest()
+    public function testShowPublishers()
     {
         $channelPublish = factory(ChannelPublish::class)->create();
         $publisher = Publisher::find($channelPublish->publisher_id);

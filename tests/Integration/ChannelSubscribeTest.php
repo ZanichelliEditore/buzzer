@@ -3,6 +3,7 @@
 namespace Tests\Integration;
 
 use App\Models\ChannelSubscribe;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Feature\ChannelSubscribeTest as ChannelSubscribeFeatureTest;
 use Tests\TestCaseWithoutMiddleware;
 
@@ -10,7 +11,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 {
     const ID_NOT_VALID = 99999999;
 
-    static function getEndpoint()
+    static public function getEndpoint()
     {
         return [
             ['example/endpoint', 'example/endpoint'],
@@ -19,12 +20,8 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider getEndpoint
-     * @return void
-     */
-    public function addTest($endpoint, $expectedEndpoint)
+    #[DataProvider('getEndpoint')]
+    public function testAdd($endpoint, $expectedEndpoint)
     {
         $newChannelSubscribe = factory(ChannelSubscribe::class)->make(['endpoint' => $endpoint]);
 
@@ -43,11 +40,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         $this->assertDatabaseHas('channel_subscribe', $expectedData);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function addDuplicateTest()
+    public function testAddDuplicate()
     {
         $newChannelSubscribe = factory(ChannelSubscribe::class)->make();
         $response = $this->json('POST', '/api/subscribers/' . $newChannelSubscribe->subscriber_id . '/channels', $newChannelSubscribe->toArray());
@@ -62,11 +55,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
         $response->assertStatus(409);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showTest()
+    public function testShow()
     {
         $channelSubscribe = factory(ChannelSubscribe::class)->create();
         $response = $this->get('/api/subscribers/' . $channelSubscribe->subscriber_id . '/channels');
@@ -76,21 +65,13 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
             ]);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function showNotFoundTest()
+    public function testShowNotFound()
     {
         $response = $this->get('/api/subscribers/' . self::ID_NOT_VALID . '/channels');
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @return void
-     */
-    public function destroyTest()
+    public function testDestroy()
     {
         $channelSubscribe = factory(ChannelSubscribe::class)->create();
         $response = $this->json(

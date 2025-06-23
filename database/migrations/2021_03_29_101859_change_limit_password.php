@@ -14,7 +14,7 @@ class ChangeLimitPassword extends Migration
     public function up()
     {
         Schema::table('channel_subscribe', function ($table) {
-            $table->string('password', 500)->change();
+            $table->string('password', 500)->nullable()->change();
         });
     }
 
@@ -26,7 +26,7 @@ class ChangeLimitPassword extends Migration
     public function down()
     {
         Schema::table('channel_subscribe', function ($table) {
-            $table->string('password', 255)->change();
+            $table->string('password', 255)->nullable()->change();
         });
     }
 }
