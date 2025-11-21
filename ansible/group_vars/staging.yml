@@ -1,5 +1,5 @@
 project_url: buzzer-test.zanichelli.it
 idp_url: idp-test.zanichelli.it
-idp_cookie_name: token-test
+idp_cookie_name: token_test
 env_param: "staging"
 email_from: noreplybuzzertest@zanichelli.it
