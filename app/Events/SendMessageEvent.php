@@ -15,17 +15,21 @@ class SendMessageEvent
     public $host;
     public $channelSubscribe;
     public $channelPriority;
+    public $channelName;
+    public $subscriberName;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Message $message, $host, $channelSubscribe, $channelPriority)
+    public function __construct(Message $message, $host, $channelSubscribe, $channelPriority, $channelName, $subscriberName)
     {
         $this->message = $message;
         $this->host = $host;
         $this->channelSubscribe = $channelSubscribe;
         $this->channelPriority = $channelPriority;
+        $this->channelName = $channelName;
+        $this->subscriberName = $subscriberName;
     }
 }
