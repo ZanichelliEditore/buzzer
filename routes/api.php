@@ -26,6 +26,8 @@ Route::middleware('client')->group(function () {
         Route::get('/', 'SubscriberController@getList');
         Route::post('/', 'SubscriberController@store');
         Route::get('{id}', 'SubscriberController@getSubscriber')->where('id', '[0-9]+');
+        Route::get('{id}/pause', 'SubscriberController@pauseSubscriber')->where('id', '[0-9]+');
+        Route::get('{id}/restore', 'SubscriberController@restoreSubscriber')->where('id', '[0-9]+');
         Route::delete('{id}', 'SubscriberController@destroy')->where('id', '[0-9]+');
 
         Route::get('{id}/channels', 'ChannelSubscribeController@getChannelSubscribe')->where('id', '[0-9]+');

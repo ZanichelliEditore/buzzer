@@ -104,6 +104,8 @@ return [
     */
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_cache:'),
-    'channel_key_prefix' => "channel."
+    'channel_key_prefix' => "channel.",
+    'publisher_paused_key_prefix' => "publisher_paused."
+
 
 ];
