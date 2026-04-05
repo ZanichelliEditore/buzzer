@@ -472,7 +472,7 @@ class ChannelController extends Controller
         foreach ($channel->subscribers as $subscriber) {
             $relations = $this->channelSubscribeRepository->where($channel->id, $subscriber->id);
             foreach ($relations as $relation) {
-                event(new SendMessageEvent($message, $subscriber->host, $relation, $channel->priority, $channel->name ?? "", $subscriber->name));
+                event(new SendMessageEvent($message, $subscriber->host, $relation, $channel->priority, $channel?->name ?? "", $subscriber->name));
             }
         }
         return response()->json([
