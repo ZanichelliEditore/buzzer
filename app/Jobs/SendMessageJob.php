@@ -12,7 +12,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
 
 class SendMessageJob implements ShouldQueue
 {
@@ -77,7 +76,7 @@ class SendMessageJob implements ShouldQueue
                 "authentication" => $this->event->channelSubscribe->authentication,
             ]);
 
-            $pausedKey = Config::get('cache.publisher_paused_key_prefix') . $this->event->channelSubscribe->subscriber_id;
+            $pausedKey = config('cache.publisher_paused_key_prefix') . $this->event->channelSubscribe->subscriber_id;
             if (Cache::has($pausedKey)) {
                 Log::warning("Message paused");
                 $this->fail("Subscriber Paused");

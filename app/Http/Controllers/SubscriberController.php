@@ -228,7 +228,7 @@ class SubscriberController extends Controller
      */
     public function getSubscriber($id)
     {
-        $subscriber = $this->subscriberRepository->find($id);;
+        $subscriber = $this->subscriberRepository->find($id);
         if (!$subscriber) {
             return response()->error404(__('messages.Subscriber') . $id);
         }
@@ -236,7 +236,7 @@ class SubscriberController extends Controller
     }
 
     /**
-     * @OA\Get(
+     * @OA\Post(
      *     path="/api/subscribers/{id}/pause",
      *     summary="Pauses a subscriber from receiving messages",
      *     tags={"subscribers"},
@@ -270,16 +270,16 @@ class SubscriberController extends Controller
      */
     public function pauseSubscriber($id)
     {
-        $subscriber = $this->subscriberRepository->find($id);;
+        $subscriber = $this->subscriberRepository->find($id);
         if (!$subscriber) {
             return response()->error404(__('messages.Subscriber') . $id);
         }
-        Cache::put(Config::get('cache.publisher_paused_key_prefix') . $id, true, 3600);
+        Cache::put(config('cache.publisher_paused_key_prefix') . $id, true, config('cache.publisher_paused_ttl'));
         return response()->success204();
     }
 
     /**
-     * @OA\Get(
+     * @OA\Post(
      *     path="/api/subscribers/{id}/restore",
      *     summary="Restore a subscriber from receiving messages",
      *     tags={"subscribers"},
@@ -313,7 +313,7 @@ class SubscriberController extends Controller
      */
     public function restoreSubscriber($id)
     {
-        $subscriber = $this->subscriberRepository->find($id);;
+        $subscriber = $this->subscriberRepository->find($id);
         if (!$subscriber) {
             return response()->error404(__('messages.Subscriber') . $id);
         }
