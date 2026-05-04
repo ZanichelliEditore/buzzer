@@ -76,7 +76,7 @@ class SendMessageJob implements ShouldQueue
                 "authentication" => $this->event->channelSubscribe->authentication,
             ]);
 
-            $pausedKey = config('cache.publisher_paused_key_prefix') . $this->event->channelSubscribe->subscriber_id;
+            $pausedKey = config('cache.subscriber_paused_key_prefix') . $this->event->channelSubscribe->subscriber_id;
             if (Cache::has($pausedKey)) {
                 Log::warning("Message paused");
                 $this->fail("Subscriber Paused");

@@ -274,7 +274,7 @@ class SubscriberController extends Controller
         if (!$subscriber) {
             return response()->error404(__('messages.Subscriber') . $id);
         }
-        Cache::put(config('cache.publisher_paused_key_prefix') . $id, true, config('cache.publisher_paused_ttl'));
+        Cache::put(config('cache.subscriber_paused_key_prefix') . $id, true, config('cache.subscriber_paused_ttl'));
         return response()->success204();
     }
 
@@ -317,7 +317,7 @@ class SubscriberController extends Controller
         if (!$subscriber) {
             return response()->error404(__('messages.Subscriber') . $id);
         }
-        Cache::forget(Config::get('cache.publisher_paused_key_prefix') . $id);
+        Cache::forget(Config::get('cache.subscriber_paused_key_prefix') . $id);
         return response()->success204();
     }
 }

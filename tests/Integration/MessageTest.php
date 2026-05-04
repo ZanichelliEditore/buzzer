@@ -202,7 +202,7 @@ class MessageTest extends TestCase
         $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
         factory(ChannelPublish::class)->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
         $channelSubscribe = factory(ChannelSubscribe::class)->create(['channel_id' => $channel->id]);
-        Cache::put(Config::get('cache.publisher_paused_key_prefix') . $channelSubscribe->subscriber_id, true, 3600);
+        Cache::put(Config::get('cache.subscriber_paused_key_prefix') . $channelSubscribe->subscriber_id, true, 3600);
         $job = (new SendMessageJob(new SendMessageEvent(new Message("hello"), "http://prova.com", $channelSubscribe, "low", "test", "test")))->withFakeQueueInteractions();
 
         $job->handle(new GuzzleService());

@@ -188,7 +188,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
         $response = $this->json('POST', '/api/subscribers/1/pause');
         $response->assertStatus(Response::HTTP_NO_CONTENT);
-        Cache::shouldHaveReceived('put')->with(Config::get('cache.publisher_paused_key_prefix') . 1, true, 3600);
+        Cache::shouldHaveReceived('put')->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, 3600);
     }
 
     public function testPauseNotFound()
@@ -220,7 +220,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
         $response = $this->json('POST', '/api/subscribers/1/restore');
         $response->assertStatus(Response::HTTP_NO_CONTENT);
-        Cache::shouldHaveReceived('forget')->with(Config::get('cache.publisher_paused_key_prefix') . 1);
+        Cache::shouldHaveReceived('forget')->with(Config::get('cache.subscriber_paused_key_prefix') . 1);
     }
 
     public function testRestoreNotFound()
