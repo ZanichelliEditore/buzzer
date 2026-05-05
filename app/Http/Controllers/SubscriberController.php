@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\SubscriberRequest;
 use App\Http\Resources\SubscriberResource;
 use App\Http\Repositories\RepositoryInterface;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 class SubscriberController extends Controller
 {
@@ -226,10 +228,96 @@ class SubscriberController extends Controller
      */
     public function getSubscriber($id)
     {
-        $subscriber = $this->subscriberRepository->find($id);;
+        $subscriber = $this->subscriberRepository->find($id);
         if (!$subscriber) {
             return response()->error404(__('messages.Subscriber') . $id);
         }
         return new SubscriberResource($subscriber);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/subscribers/{id}/pause",
+     *     summary="Pauses a subscriber from receiving messages",
+     *     tags={"subscribers"},
+     *     security={{"passport":{}}},
+     *     description="Use to pauses a subscriber from receiving messages for 1 hour",
+     *     operationId="SubscriberController.pauseSubscriber",
+     *     @OA\Parameter(
+     *        in="path",
+     *        required=true,
+     *        description="Subscriber id",
+     *        name="id",
+     *        @OA\Schema(
+     *            type="integer",
+     *            minimum=1
+     *        )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         ref="#/components/responses/Success200"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         ref="#/components/responses/Error404"
+     *     )
+     * )
+     *
+     * Response to route /api/subscribers/{id}/pause
+     *
+     * @param  int  $id
+     *
+     */
+    public function pauseSubscriber($id)
+    {
+        $subscriber = $this->subscriberRepository->find($id);
+        if (!$subscriber) {
+            return response()->error404(__('messages.Subscriber') . $id);
+        }
+        Cache::put(config('cache.subscriber_paused_key_prefix') . $id, true, config('cache.subscriber_paused_ttl'));
+        return response()->success204();
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/subscribers/{id}/restore",
+     *     summary="Restore a subscriber from receiving messages",
+     *     tags={"subscribers"},
+     *     security={{"passport":{}}},
+     *     description="Use to restore a subscriber from receiving messages",
+     *     operationId="SubscriberController.restoreSubscriber",
+     *     @OA\Parameter(
+     *        in="path",
+     *        required=true,
+     *        description="Subscriber id",
+     *        name="id",
+     *        @OA\Schema(
+     *            type="integer",
+     *            minimum=1
+     *        )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         ref="#/components/responses/Success200"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         ref="#/components/responses/Error404"
+     *     )
+     * )
+     *
+     * Response to route /api/subscribers/{id}/restore
+     *
+     * @param  int  $id
+     *
+     */
+    public function restoreSubscriber($id)
+    {
+        $subscriber = $this->subscriberRepository->find($id);
+        if (!$subscriber) {
+            return response()->error404(__('messages.Subscriber') . $id);
+        }
+        Cache::forget(Config::get('cache.subscriber_paused_key_prefix') . $id);
+        return response()->success204();
     }
 }

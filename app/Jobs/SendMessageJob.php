@@ -10,7 +10,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class SendMessageJob implements ShouldQueue
 {
@@ -18,7 +19,7 @@ class SendMessageJob implements ShouldQueue
 
     private $event;
     private $body;
-
+    private $startTime;
 
     /**
      * The number of times the job may be attempted.
@@ -67,16 +68,43 @@ class SendMessageJob implements ShouldQueue
      */
     public function handle(GuzzleService $guzzleService)
     {
-        switch ($this->event->channelSubscribe->authentication) {
-            case Authentication::BASIC:
-                $guzzleService->sendWithBasicAuth($this->event);
-                break;
-            case Authentication::NONE:
-                $guzzleService->sendWithoutAuth($this->event);
-                break;
-            case Authentication::OAUTH2:
-                $guzzleService->sendWithOAuth2($this->event);
-                break;
+        try {
+            Log::withContext([
+                "subscriber" => $this->event->subscriberName,
+                "channel" => $this->event->channelName,
+                "priority" => $this->event->channelSubscribe->channelPriority,
+                "authentication" => $this->event->channelSubscribe->authentication,
+            ]);
+
+            $pausedKey = config('cache.subscriber_paused_key_prefix') . $this->event->channelSubscribe->subscriber_id;
+            if (Cache::has($pausedKey)) {
+                Log::warning("Message paused");
+                $this->fail("Subscriber Paused");
+                return;
+            }
+
+            $this->startTime = microtime(true);
+            switch ($this->event->channelSubscribe->authentication) {
+                case Authentication::BASIC:
+                    $guzzleService->sendWithBasicAuth($this->event);
+                    break;
+                case Authentication::NONE:
+                    $guzzleService->sendWithoutAuth($this->event);
+                    break;
+                case Authentication::OAUTH2:
+                    $guzzleService->sendWithOAuth2($this->event);
+                    break;
+            }
+            Log::info("Message sent successfully", [
+                "time" => microtime(true) - $this->startTime,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Message sending failed', [
+                "time" => microtime(true) - $this->startTime,
+                "attempts" => $this->attempts(),
+                "exception" => $e->getMessage(),
+            ]);
+            throw $e;
         }
     }
 

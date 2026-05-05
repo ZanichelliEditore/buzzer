@@ -28,7 +28,7 @@ export const useChannelsStore = defineStore("channels", {
         return { meta, links };
       } catch (error) {
         this.loadingObject = false;
-        throw error.response.data;;
+        throw error.response.data;
       }
     },
 

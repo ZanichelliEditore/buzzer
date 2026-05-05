@@ -2,7 +2,9 @@
 
 namespace Tests\Integration;
 
+use App\Events\SendMessageEvent;
 use Mockery;
+use App\Models\Message;
 use App\Models\Channel;
 use App\Models\Publisher;
 use Illuminate\Support\Str;
@@ -13,6 +15,8 @@ use App\Http\Services\GuzzleService;
 use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Support\Facades\Queue;
 use Tests\CreatesApplication;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 class MessageTest extends TestCase
 {
@@ -190,5 +194,18 @@ class MessageTest extends TestCase
 
         $response = $this->json('POST', '/api/sendMessage/' . Str::random(10), [], $authorization);
         $response->assertStatus(401);
+    }
+
+    public function testSendMessagePaused()
+    {
+        $channel = factory(Channel::class)->create();
+        $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
+        factory(ChannelPublish::class)->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
+        $channelSubscribe = factory(ChannelSubscribe::class)->create(['channel_id' => $channel->id]);
+        Cache::put(Config::get('cache.subscriber_paused_key_prefix') . $channelSubscribe->subscriber_id, true, 3600);
+        $job = (new SendMessageJob(new SendMessageEvent(new Message("hello"), "http://prova.com", $channelSubscribe, "low", "test", "test")))->withFakeQueueInteractions();
+
+        $job->handle(new GuzzleService());
+        $job->assertFailed();
     }
 }
