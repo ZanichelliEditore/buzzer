@@ -39,7 +39,7 @@ class FailedJobTest extends TestCaseWithoutMiddleware
     public function testSuccesfullyListFailedJob()
     {
         $channelSubscribe = factory(ChannelSubscribe::class)->create();
-        $sendMessageJob = new SendMessageJob(new SendMessageEvent(new Message('messaggio'), 'host', $channelSubscribe, 'highpriority'));
+        $sendMessageJob = new SendMessageJob(new SendMessageEvent(new Message('messaggio'), 'host', $channelSubscribe, 'highpriority', 'channelName', 'publisherName'));
 
         $failedJob = factory(FailedJob::class)->make([
             'payload' => json_encode(["data" => ["command" => serialize($sendMessageJob)]]),

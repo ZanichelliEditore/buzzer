@@ -6,6 +6,9 @@ use Mockery;
 use App\Models\Subscriber;
 use App\Http\Repositories\SubscriberRepository;
 use Tests\TestCaseWithoutMiddleware;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 class SubscriberTest extends TestCaseWithoutMiddleware
 {
@@ -168,5 +171,69 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
         $response = $this->json('DELETE', '/api/subscribers/1');
         $response->assertStatus(200);
+    }
+
+    public function testPause()
+    {
+        Cache::spy();
+        $subscriber = factory(Subscriber::class)->make();
+        $subscriber->id = 1;
+        $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
+            ->shouldReceive([
+                "find" => $subscriber,
+            ])
+            ->withAnyArgs()
+            ->once()
+            ->getMock();
+        $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
+        $response = $this->json('POST', '/api/subscribers/1/pause');
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
+        Cache::shouldHaveReceived('put')->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, 3600);
+    }
+
+    public function testPauseNotFound()
+    {
+        $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
+            ->shouldReceive([
+                "find" => null,
+            ])
+            ->withAnyArgs()
+            ->once()
+            ->getMock();
+        $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
+        $response = $this->json('POST', '/api/subscribers/1/pause');
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testRestore()
+    {
+        Cache::spy();
+        $subscriber = factory(Subscriber::class)->make();
+        $subscriber->id = 1;
+        $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
+            ->shouldReceive([
+                "find" => $subscriber,
+            ])
+            ->withAnyArgs()
+            ->once()
+            ->getMock();
+        $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
+        $response = $this->json('POST', '/api/subscribers/1/restore');
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
+        Cache::shouldHaveReceived('forget')->with(Config::get('cache.subscriber_paused_key_prefix') . 1);
+    }
+
+    public function testRestoreNotFound()
+    {
+        $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
+            ->shouldReceive([
+                "find" => null,
+            ])
+            ->withAnyArgs()
+            ->once()
+            ->getMock();
+        $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
+        $response = $this->json('POST', '/api/subscribers/1/restore');
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 }

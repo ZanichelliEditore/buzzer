@@ -231,7 +231,7 @@ class PublisherController extends Controller
      */
     public function getPublisher($id)
     {
-        $publisher = $this->publisherRepository->find($id);;
+        $publisher = $this->publisherRepository->find($id);
         if (!$publisher) {
             return response()->error404(__('messages.Publisher') . $id);
         }
