@@ -70,7 +70,7 @@ Route::group($middleware, function () use ($middlewareCheckRole) {
 
         Route::get('/{any}', function () {
             return view('app');
-        })->where("any", ".*");
+        })->where("any", "^(?!docs).*"); // Exclude /docs/* paths (for Scramble documentation)
     });
 });
 

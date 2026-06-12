@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['basicAuth'])->group(function () {
-    Route::post('/sendMessage', 'ChannelController@SendMessage');
-    Route::post('/sendMessage/{channelName}', 'ChannelController@SendMessageToChannel');
+    Route::post('/sendMessage', 'ChannelController@sendMessage');
+    Route::post('/sendMessage/{channelName}', 'ChannelController@sendMessageToChannel');
 });
 
 Route::post('/logout-idp', 'Auth\LoginController@logoutIdp')->name('logoutIdp');

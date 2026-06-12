@@ -393,7 +393,7 @@ class ChannelController extends Controller
      *     summary="Send a message to Channel",
      *     tags={"messages"},
      *     description="Use to send message to the subscribers of a channel",
-     *     operationId="ChannelController.SendMessageToChannel",
+     *     operationId="ChannelController.sendMessageToChannel",
      *     security = {{"basicAuth": {}}},
      *     @OA\Parameter(
      *         in="path",
@@ -437,7 +437,7 @@ class ChannelController extends Controller
      * @return Response
      *
      */
-    public function SendMessageToChannel(MessageRequest $request, $channelName)
+    public function sendMessageToChannel(MessageRequest $request, $channelName)
     {
         $channel = $this->getCachedChannelByName($channelName);
 

@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.2",
         "darkaonline/l5-swagger": "^8.3",
+        "dedoc/scramble": "^0.13.26",
         "laravel/framework": "^12.0",
         "laravel/legacy-factories": "^1.1",
         "laravel/passport": "^12.0",
