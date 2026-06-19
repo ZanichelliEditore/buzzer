@@ -6,6 +6,9 @@ use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\Response;
 use Dedoc\Scramble\Support\Generator\Schema;
+use Dedoc\Scramble\Support\Generator\SecurityRequirement;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Dedoc\Scramble\Support\Generator\SecuritySchemes\OAuthFlow;
 use Dedoc\Scramble\Support\Generator\Types\ObjectType;
 use Dedoc\Scramble\Support\Generator\Types\StringType;
 use Dedoc\Scramble\Support\Generator\Types\ArrayType;
@@ -17,6 +20,8 @@ class ScrambleServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Scramble::afterOpenApiGenerated(function (OpenApi $openApi) {
+            // Add security schemes to OpenAPI spec
+            $this->addSecuritySchemes($openApi);
             // Cache route information
             $routeCache = [];
             foreach (Route::getRoutes() as $route) {
@@ -129,6 +134,47 @@ class ScrambleServiceProvider extends ServiceProvider
                     }
                 }
             }
+
+            // Apply security requirements based on route middleware
+            $routeMiddlewareMap = [];
+            foreach (Route::getRoutes() as $route) {
+                // Only process API routes
+                if (!str_starts_with($route->uri(), 'api/')) {
+                    continue;
+                }
+
+                $action = $route->getAction();
+                if (isset($action['controller'])) {
+                    $parts = explode('@', $action['controller']);
+                    if (count($parts) === 2) {
+                        [$controller, $method] = $parts;
+                        $controllerShortName = class_basename($controller);
+                        $operationId = strtolower(str_replace('Controller', '', $controllerShortName)) . '.' . $method;
+
+                        // Get all middleware for this route
+                        $middlewares = $route->gatherMiddleware();
+                        $routeMiddlewareMap[$operationId] = $middlewares;
+                    }
+                }
+            }
+
+            // Apply security schemes to operations based on their middleware
+            foreach ($openApi->paths as $path) {
+                foreach ($path->operations as $operation) {
+                    $operationId = $operation->operationId ?? '';
+                    $middlewares = $routeMiddlewareMap[$operationId] ?? [];
+
+                    // Apply appropriate security scheme based on middleware
+                    if (in_array('client', $middlewares)) {
+                        // OAuth2 client credentials for admin API routes
+                        $operation->security = [new SecurityRequirement(['passport' => []])];
+                    } elseif (in_array('basicAuth', $middlewares)) {
+                        // HTTP Basic Auth for publisher message routes
+                        $operation->security = [new SecurityRequirement(['basicAuth' => []])];
+                    }
+                    // Routes without these middleware will have no security requirement
+                }
+            }
         });
     }
 
@@ -175,5 +221,31 @@ class ScrambleServiceProvider extends ServiceProvider
         $objectType->setRequired(['message', 'errors']);
 
         return Schema::fromType($objectType);
+    }
+
+    /**
+     * Add security schemes to the OpenAPI specification
+     */
+    private function addSecuritySchemes(OpenApi $openApi): void
+    {
+        // Add OAuth2 (Laravel Passport) security scheme
+        $clientCredentialsFlow = new OAuthFlow();
+        $clientCredentialsFlow->tokenUrl(config('app.url') . '/oauth/token');
+
+        $oauth2Scheme = SecurityScheme::oauth2()
+            ->as('passport')
+            ->setDescription('OAuth2 client credentials flow for admin API access')
+            ->flows(function ($flows) use ($clientCredentialsFlow) {
+                $flows->clientCredentials($clientCredentialsFlow);
+            });
+
+        $openApi->components->addSecurityScheme('passport', $oauth2Scheme);
+
+        // Add HTTP Basic Auth security scheme
+        $basicAuthScheme = SecurityScheme::http('basic')
+            ->as('basicAuth')
+            ->setDescription('Basic HTTP authentication for publishers sending messages');
+
+        $openApi->components->addSecurityScheme('basicAuth', $basicAuthScheme);
     }
 }
