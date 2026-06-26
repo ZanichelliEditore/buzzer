@@ -7,6 +7,7 @@ use App\Http\Requests\ChannelPublishRequest;
 use App\Http\Repositories\PublisherRepository;
 use App\Http\Repositories\RepositoryInterface;
 use App\Http\Resources\PublisherChannelResource;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 
 class ChannelPublishController extends Controller
 {
@@ -67,6 +68,10 @@ class ChannelPublishController extends Controller
      *      )
      * )
      */
+    #[ScrambleResponse(status: 201, description: 'Publisher successfully registered to channel')]
+    #[ScrambleResponse(status: 409, description: 'Conflict - Subscription already exists')]
+    #[ScrambleResponse(status: 422, description: 'Validation error or publisher not found')]
+    #[ScrambleResponse(status: 500, description: 'Internal server error')]
     public function store(ChannelPublishRequest $request, $id)
     {
         if (!$this->publisherRepository->find($id)) {

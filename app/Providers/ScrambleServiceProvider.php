@@ -14,6 +14,7 @@ use Dedoc\Scramble\Support\Generator\Types\StringType;
 use Dedoc\Scramble\Support\Generator\Types\ArrayType;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 
 class ScrambleServiceProvider extends ServiceProvider
 {
@@ -22,8 +23,9 @@ class ScrambleServiceProvider extends ServiceProvider
         Scramble::afterOpenApiGenerated(function (OpenApi $openApi) {
             // Add security schemes to OpenAPI spec
             $this->addSecuritySchemes($openApi);
-            // Cache route information
+            // Cache route information and check for Scramble Response attributes
             $routeCache = [];
+            $routeScrambleResponseCodes = [];
             foreach (Route::getRoutes() as $route) {
                 $action = $route->getAction();
                 if (isset($action['controller'])) {
@@ -41,6 +43,17 @@ class ScrambleServiceProvider extends ServiceProvider
                             $source = implode('', array_slice($lines, $startLine - 1, $endLine - $startLine + 1));
                             $routeCache[$key] = $source;
                         }
+
+                        // Check if method has Scramble Response attributes and collect their status codes
+                        $attributes = $reflection->getAttributes(ScrambleResponse::class);
+                        if (!empty($attributes)) {
+                            $statusCodes = [];
+                            foreach ($attributes as $attribute) {
+                                $instance = $attribute->newInstance();
+                                $statusCodes[] = (int) $instance->status;
+                            }
+                            $routeScrambleResponseCodes[$key] = $statusCodes;
+                        }
                     } catch (\Throwable $e) {
                         // Skip if reflection fails
                     }
@@ -53,6 +66,16 @@ class ScrambleServiceProvider extends ServiceProvider
                     'code' => 404,
                     'description' => 'Resource not found',
                     'schema' => $this->createErrorSchema('Resource not found'),
+                ],
+                'error409' => [
+                    'code' => 409,
+                    'description' => 'Conflict - Resource already exists',
+                    'schema' => $this->createErrorSchema('The resource already exists'),
+                ],
+                'error422' => [
+                    'code' => 422,
+                    'description' => 'Validation error',
+                    'schema' => $this->createValidationErrorSchema(),
                 ],
                 'error500' => [
                     'code' => 500,
@@ -69,11 +92,6 @@ class ScrambleServiceProvider extends ServiceProvider
                     'description' => 'Resource created',
                     'schema' => $this->createSuccessSchema('Resource created successfully'),
                 ],
-                'error422' => [
-                    'code' => 422,
-                    'description' => 'Validation error',
-                    'schema' => $this->createValidationErrorSchema(),
-                ],
             ];
 
             // Add responses to operations based on their source code
@@ -84,6 +102,7 @@ class ScrambleServiceProvider extends ServiceProvider
                     // Try to find matching route source code
                     $source = null;
                     $operationId = $operation->operationId ?? '';
+                    $matchedRouteKey = null;
 
                     foreach ($routeCache as $routeKey => $routeSource) {
                         // Extract controller and method from route key (e.g., "App\Http\Controllers\PublisherController@destroy")
@@ -95,16 +114,37 @@ class ScrambleServiceProvider extends ServiceProvider
                         [$controllerClass, $method] = $parts;
                         $controllerShortName = class_basename($controllerClass);
 
-                        // Try to match with operationId patterns like "publisher.destroy"
-                        $expectedOperationId = strtolower(str_replace('Controller', '', $controllerShortName)) . '.' . $method;
+                        // Try to match with operationId patterns like "publisher.destroy" or "channelPublish.store"
+                        // Scramble may use camelCase for multi-word controllers
+                        $controllerBaseName = str_replace('Controller', '', $controllerShortName);
+                        $expectedOperationId1 = strtolower($controllerBaseName) . '.' . $method;
+                        $expectedOperationId2 = lcfirst($controllerBaseName) . '.' . $method;
 
-                        if ($operationId === $expectedOperationId) {
+                        if ($operationId === $expectedOperationId1 || $operationId === $expectedOperationId2) {
                             $source = $routeSource;
+                            $matchedRouteKey = $routeKey;
                             break;
                         }
                     }
 
                     if (!$source) {
+                        continue;
+                    }
+
+                    // If the method has Scramble Response attributes, keep only those response codes
+                    if ($matchedRouteKey && isset($routeScrambleResponseCodes[$matchedRouteKey])) {
+                        $allowedCodes = $routeScrambleResponseCodes[$matchedRouteKey];
+                        // Remove any responses NOT in the attribute-defined codes
+                        $operation->responses = collect($operation->responses)
+                            ->filter(function($r) use ($allowedCodes) {
+                                if (property_exists($r, 'code')) {
+                                    return in_array((int) $r->code, $allowedCodes, true);
+                                }
+                                return true;
+                            })
+                            ->values()
+                            ->all();
+                        // Skip adding responses from source code - attributes take precedence
                         continue;
                     }
 

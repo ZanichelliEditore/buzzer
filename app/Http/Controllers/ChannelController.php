@@ -17,6 +17,7 @@ use App\Http\Requests\MessageChannelRequest;
 use App\Http\Repositories\PublisherRepository;
 use App\Http\Resources\ChannelSubscribeResource;
 use App\Http\Repositories\ChannelSubscribeRepository;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 
 class ChannelController extends Controller
 {
@@ -183,6 +184,9 @@ class ChannelController extends Controller
      *      )
      * )
      */
+    #[ScrambleResponse(status: 201, description: 'Channel created successfully')]
+    #[ScrambleResponse(status: 422, description: 'Validation error')]
+    #[ScrambleResponse(status: 500, description: 'Internal server error')]
     public function store(ChannelRequest $request)
     {
         $channel = $request->only(['name', 'priority']);

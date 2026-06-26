@@ -47,7 +47,6 @@
 
             // Add OAuth2 Bearer token if available
             if (window.oauth2Token) {
-                console.log('FRAPPA QUA', url);
                 updateFetchHeaders(headers, 'Authorization', `Bearer ${window.oauth2Token}`);
             }           
 
@@ -165,7 +164,6 @@
     // OAuth2 Panel JavaScript
     (function() {
         // Store the OAuth2 token globally
-        console.log('FRAPPA NULL');
         window.oauth2Token = null;
 
         const getCookie = (name) => {
@@ -258,10 +256,15 @@
 
         // Function to update Stoplight Elements Authorization fields
         function updateStoplightAuthDisplay() {
-            if (!window.oauth2Token) return;
+            // Read token from textarea instead of window.oauth2Token
+            const tokenValue = document.getElementById('token-value').value.trim();
+            if (!tokenValue) return;
 
-            const token = window.oauth2Token;
+            const token = tokenValue;
             const bearerToken = `Bearer ${token}`;
+
+            // Also update window.oauth2Token to keep it in sync
+            window.oauth2Token = token;
 
             // Wait for Stoplight Elements to render
             setTimeout(() => {
@@ -305,7 +308,16 @@
         }
 
         document.getElementById('use-token-btn').addEventListener('click', () => {
-            // Token is already stored in window.oauth2Token, which is used by fetch interceptor
+            // Read token from textarea and update both Stoplight and window.oauth2Token
+            const tokenValue = document.getElementById('token-value').value.trim();
+
+            if (!tokenValue) {                
+                return;
+            }
+
+            // Update window.oauth2Token from textarea value
+            window.oauth2Token = tokenValue;            
+
             const btn = document.getElementById('use-token-btn');
             const originalText = btn.textContent;
             const originalBg = btn.style.background;
@@ -313,7 +325,7 @@
             btn.textContent = 'Token Applied!';
             btn.style.background = '#059669';
 
-            // Update Stoplight Elements display
+            // Update Stoplight Elements display (which now reads from textarea)
             updateStoplightAuthDisplay();
 
             setTimeout(() => {
@@ -360,6 +372,50 @@
                 btn.style.background = '#10b981';
             }, 2000);
         }
+
+        // Sync textarea token-value changes to window.oauth2Token
+        document.getElementById('token-value').addEventListener('input', (e) => {
+            const newToken = e.target.value.trim();
+            if (newToken) {
+                window.oauth2Token = newToken;                
+            } else {
+                window.oauth2Token = null;                
+            }
+        });
+
+        // ====== REVERSE SYNC: Stoplight Elements Input → window.oauth2Token ======
+        // Listen for changes in Stoplight-generated auth inputs and sync back to window.oauth2Token
+        (function setupStoplightTokenSync() {
+            // Use event delegation to handle dynamically created inputs
+            document.addEventListener('input', (e) => {
+                const target = e.target;
+
+                // Check if this is a Stoplight auth input by:
+                // 1. ID pattern: id_auth_Token_* (dynamic suffix)
+                // 2. OR name/placeholder patterns for authorization
+                const isStoplightAuthInput =
+                    (target.id && target.id.match(/^id_auth_Token_/)) ||
+                    (target.name && target.name.toLowerCase().includes('authorization')) ||
+                    (target.placeholder && (
+                        target.placeholder.includes('Bearer') ||
+                        target.placeholder.includes('Authorization') ||
+                        target.placeholder.toLowerCase().includes('token')
+                    ));
+
+                if (isStoplightAuthInput && target.tagName === 'INPUT') {
+                    let newToken = target.value.trim();
+
+                    // Remove "Bearer " prefix if user includes it
+                    newToken = newToken.replace(/^Bearer\s+/i, '');
+
+                    if (newToken) {
+                        window.oauth2Token = newToken;                        
+                    } else {
+                        window.oauth2Token = null;                        
+                    }
+                }
+            }, true); // Use capture phase to ensure early interception            
+        })();
 
         // Allow Enter key to submit
         document.getElementById('client-id').addEventListener('keypress', (e) => {
