@@ -19,7 +19,10 @@ return [
      * Override with `servers`, or use Scramble::registerApi() for separate bases.
      */
     'api_path' => [
-        'include' => 'api',
+        'include' => [
+            'api',
+            'oauth/token'
+        ],
         'exclude' => [
             'api/documentation',      // l5-swagger UI
             'api/oauth2-callback',    // l5-swagger OAuth callback
@@ -28,6 +31,7 @@ return [
             'api/basic',              // Test endpoint
             'api/oauth',              // Test endpoint
             'api/none',               // Test endpoint
+            'oauth/token/refresh'
         ],
     ],
 
@@ -103,9 +107,7 @@ return [
      * ],
      * ```
      */
-    'servers' => [
-        'Local' => env('APP_URL', 'http://localhost:8085') . '/api',
-    ],
+    'servers' => [],
 
     /**
      * Determines how Scramble stores the descriptions of enum cases.
@@ -153,23 +155,7 @@ return [
     /*
      * Security schemes for the API. Defines the authentication methods available.
      */
-    'security_schemes' => [
-        'passport' => [
-            'type' => 'oauth2',
-            'description' => 'OAuth2 client credentials flow for admin API access',
-            'flows' => [
-                'clientCredentials' => [
-                    'tokenUrl' => env('APP_URL', 'http://localhost:8085') . '/oauth/token',
-                    'scopes' => [],
-                ],
-            ],
-        ],
-        'basicAuth' => [
-            'type' => 'http',
-            'scheme' => 'basic',
-            'description' => 'Basic HTTP authentication for publishers sending messages',
-        ],
-    ],
+    'security_schemes' => [],
 
     /*
      * Automatically document API security (OpenAPI `security` / `securitySchemes`) based on route

@@ -4,70 +4,62 @@ namespace App\Providers;
 
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\Schema;
 use Dedoc\Scramble\Support\Generator\SecurityRequirement;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Dedoc\Scramble\Support\Generator\SecuritySchemes\OAuthFlow;
+use Dedoc\Scramble\Support\Generator\Types\StringType;
+use Dedoc\Scramble\Support\Generator\Operation;
+use Dedoc\Scramble\Support\Generator\Parameter;
+use Dedoc\Scramble\Support\Generator\RequestBodyObject;
+use Dedoc\Scramble\Support\RouteInfo;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Route;
 
 class ScrambleServiceProvider extends ServiceProvider
 {
-    public function boot(): void
+    public function boot()
     {
-        Scramble::afterOpenApiGenerated(function (OpenApi $openApi) {
-            $this->addSecuritySchemes($openApi);
-            $routeMiddlewareMap = [];
-            foreach (Route::getRoutes() as $route) {
-                if (!str_starts_with($route->uri(), 'api/')) {
-                    continue;
+        Scramble::configure()
+
+            ->withDocumentTransformers(function (OpenApi $openApi) {
+
+                // INFO: define security schemas
+                $openApi->secure(SecurityScheme::http('basic')->as("basicAuth"));
+                $openApi->secure(SecurityScheme::oauth2()
+                    ->as("passport")
+                    ->flow('authorizationCode', function (OAuthFlow $flow) {
+                        $flow
+                            ->authorizationUrl(config('app.url') . '/oauth/authorize')
+                            ->tokenUrl(config('app.url') . '/oauth/token')
+                            ->addScope('*', 'all');
+                    }));
+            })
+
+            ->withOperationTransformers(function (Operation $operation, RouteInfo $routeInfo) {
+
+                // INFO: assign security schema based on middleware
+                $routeMiddlewares = collect($routeInfo->route->gatherMiddleware());
+                if ($routeMiddlewares->contains("basicAuth")) {
+                    $operation->addSecurity(new SecurityRequirement(["basicAuth" => []]));
+                } elseif ($routeMiddlewares->contains("client")) {
+                    $operation->addSecurity(new SecurityRequirement(["passport" => []]));
+                } else {
+                    $operation->security = [];
                 }
-                $action = $route->getAction();
-                if (isset($action['controller'])) {
-                    $parts = explode('@', $action['controller']);
-                    if (count($parts) === 2) {
-                        [$controller, $method] = $parts;
-                        $controllerShortName = class_basename($controller);
-                        $operationId = strtolower(str_replace('Controller', '', $controllerShortName)) . '.' . $method;
-                        $middlewares = $route->gatherMiddleware();
-                        $routeMiddlewareMap[$operationId] = $middlewares;
-                    }
+
+                // INFO: improve oauth/token route doc
+                if ($operation->path == "oauth/token" && $operation->method == "post") {
+                    $operation->addRequestBodyObject(RequestBodyObject::make()->setContent(
+                        'application/json',
+                        Schema::createFromParameters([
+                            (new Parameter('grant_type', 'query'))->setSchema(Schema::fromType(new StringType))->example("client_credentials"),
+                            (new Parameter('client_id', 'query'))->setSchema(Schema::fromType(new StringType))->example("1"),
+                            (new Parameter('client_secret', 'query'))->setSchema(Schema::fromType(new StringType))->example("secretOAuth2Example"),
+                            (new Parameter('scope', 'query'))->setSchema(Schema::fromType(new StringType))->example(""),
+                        ])
+                    ));
                 }
-            }
-
-            foreach ($openApi->paths as $path) {
-                foreach ($path->operations as $operation) {
-                    $operationId = $operation->operationId ?? '';
-                    $middlewares = $routeMiddlewareMap[$operationId] ?? [];
-
-                    if (in_array('client', $middlewares)) {
-                        $operation->security = [new SecurityRequirement(['passport' => []])];
-                    } elseif (in_array('basicAuth', $middlewares)) {
-                        $operation->security = [new SecurityRequirement(['basicAuth' => []])];
-                    }
-                }
-            }
-        });
-    }
-
-    private function addSecuritySchemes(OpenApi $openApi): void
-    {
-        // Add OAuth2 (Laravel Passport) security scheme
-        $clientCredentialsFlow = new OAuthFlow();
-        $clientCredentialsFlow->tokenUrl(config('app.url') . '/oauth/token');
-
-        $oauth2Scheme = SecurityScheme::oauth2()
-            ->as('passport')
-            ->setDescription('OAuth2 client credentials flow for admin API access')
-            ->flows(function ($flows) use ($clientCredentialsFlow) {
-                $flows->clientCredentials($clientCredentialsFlow);
-            });
-
-        $openApi->components->addSecurityScheme('passport', $oauth2Scheme);
-
-        $basicAuthScheme = SecurityScheme::http('basic')
-            ->as('basicAuth')
-            ->setDescription('Basic HTTP authentication for publishers sending messages');
-
-        $openApi->components->addSecurityScheme('basicAuth', $basicAuthScheme);
+            })
+        ;
     }
 }
