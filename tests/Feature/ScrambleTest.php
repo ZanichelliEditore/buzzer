@@ -11,4 +11,10 @@ class ScrambleTest extends TestCaseWithoutMiddleware
         $response = $this->withMiddleware()->get('docs/api');
         $response->assertStatus(200);
     }
+
+    public function testScrambleJsonRoute(): void
+    {
+        $response = $this->withMiddleware()->get('docs/api');
+        $response->assertStatus(200);
+    }
 }
