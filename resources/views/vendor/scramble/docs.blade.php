@@ -37,6 +37,17 @@
                 }
             };
 
+            const hasHeader = (headers, headerKey) => {
+                if (headers instanceof Headers) {
+                    return headers.has(headerKey);
+                } else if (Array.isArray(headers)) {
+                    return headers.some(([key]) => key.toLowerCase() === headerKey.toLowerCase());
+                } else if (headers) {
+                    return Object.keys(headers).some((key) => key.toLowerCase() === headerKey.toLowerCase());
+                }
+                return false;
+            };
+
             const { headers = new Headers() } = options || {};
 
             // Add CSRF token
@@ -45,10 +56,11 @@
                 updateFetchHeaders(headers, CSRF_TOKEN_HEADER_KEY, decodeURIComponent(csrfToken));
             }
 
-            // Add OAuth2 Bearer token if available
-            if (window.oauth2Token) {
+            // Add OAuth2 Bearer token if available, but don't clobber an Authorization
+            // header already set for another security scheme (e.g. Basic Auth or an API key)
+            if (window.oauth2Token && !hasHeader(headers, 'Authorization')) {
                 updateFetchHeaders(headers, 'Authorization', `Bearer ${window.oauth2Token}`);
-            }           
+            }
 
             return originalFetch(url, {
                 ...options,
@@ -114,12 +126,15 @@
     <div id="token-display" style="margin-top: 15px; display: none;">
         <label style="display: block; color: #9ca3af; font-size: 12px; margin-bottom: 4px;">Access Token</label>
         <textarea id="token-value" readonly style="width: 100%; height: 80px; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #374151; background: #111827; color: #10b981; font-size: 11px; font-family: 'Courier New', monospace; resize: none; box-sizing: border-box;"></textarea>
-        <div style="display: flex; gap: 8px;">
-            <button id="use-token-btn" style="flex: 1; padding: 8px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;">
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button id="use-token-btn" style="flex: 1; min-width: 80px; padding: 8px 4px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;">
                 Use Token
             </button>
-            <button id="copy-token-btn" style="flex: 1; padding: 8px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;">
+            <button id="copy-token-btn" style="flex: 1; min-width: 80px; padding: 8px 4px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;">
                 Copy Token
+            </button>
+            <button id="delete-token-btn" style="flex: 1; min-width: 80px; padding: 8px 4px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;">
+                Delete Token
             </button>
         </div>
     </div>
@@ -322,7 +337,7 @@
             const originalText = btn.textContent;
             const originalBg = btn.style.background;
 
-            btn.textContent = 'Token Applied!';
+            btn.textContent = 'Applied!';
             btn.style.background = '#059669';
 
             // Update Stoplight Elements display (which now reads from textarea)
@@ -370,6 +385,50 @@
             setTimeout(() => {
                 btn.textContent = originalText;
                 btn.style.background = '#10b981';
+            }, 2000);
+        }
+
+        document.getElementById('delete-token-btn').addEventListener('click', () => {
+            // Clear the in-memory token used by the fetch interceptor
+            window.oauth2Token = null;
+
+            // Clear the textarea and hide the token display
+            document.getElementById('token-value').value = '';
+            tokenDisplayHide();
+
+            // Clear any Stoplight Elements authorization inputs that were populated
+            const selectors = [
+                'input[placeholder*="Bearer"]',
+                'input[placeholder*="Authorization"]',
+                'input[placeholder*="token"]',
+                'input[name*="Authorization"]',
+                'input[name*="authorization"]',
+                '[class*="auth"] input[type="text"]',
+                '[class*="Auth"] input[type="text"]',
+            ];
+            selectors.forEach((selector) => {
+                document.querySelectorAll(selector).forEach((input) => {
+                    input.value = '';
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+            });
+
+            showDeleteFeedback();
+        });
+
+        function tokenDisplayHide() {
+            document.getElementById('token-display').style.display = 'none';
+        }
+
+        function showDeleteFeedback() {
+            const btn = document.getElementById('delete-token-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Deleted!';
+            btn.style.background = '#991b1b';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#dc2626';
             }, 2000);
         }
 
