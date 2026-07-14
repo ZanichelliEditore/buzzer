@@ -380,21 +380,30 @@
         function showCopyFeedback() {
             const btn = document.getElementById('copy-token-btn');
             const originalText = btn.textContent;
+            const originalBg = btn.style.background;
+
             btn.textContent = 'Copied!';
             btn.style.background = '#059669';
+
             setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '#10b981';
-            }, 2000);
+                // Close the panel after showing feedback
+                oauthPanel.style.display = 'none';
+                toggleBtn.style.display = 'flex';
+
+                // Reset button after closing
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = originalBg;
+                }, 100);
+            }, 1000);
         }
 
         document.getElementById('delete-token-btn').addEventListener('click', () => {
             // Clear the in-memory token used by the fetch interceptor
             window.oauth2Token = null;
 
-            // Clear the textarea and hide the token display
+            // Clear the textarea
             document.getElementById('token-value').value = '';
-            tokenDisplayHide();
 
             // Clear any Stoplight Elements authorization inputs that were populated
             const selectors = [
@@ -424,12 +433,23 @@
         function showDeleteFeedback() {
             const btn = document.getElementById('delete-token-btn');
             const originalText = btn.textContent;
+            const originalBg = btn.style.background;
+
             btn.textContent = 'Deleted!';
             btn.style.background = '#991b1b';
+
             setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '#dc2626';
-            }, 2000);
+                // Close the panel after showing feedback
+                oauthPanel.style.display = 'none';
+                toggleBtn.style.display = 'flex';
+                tokenDisplayHide();
+
+                // Reset button after closing
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = originalBg;
+                }, 100);
+            }, 1000);
         }
 
         // Sync textarea token-value changes to window.oauth2Token
