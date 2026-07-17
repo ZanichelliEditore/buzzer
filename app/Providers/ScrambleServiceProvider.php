@@ -27,9 +27,8 @@ class ScrambleServiceProvider extends ServiceProvider
                 $openApi->secure(SecurityScheme::http('basic')->as("basicAuth"));
                 $openApi->secure(SecurityScheme::oauth2()
                     ->as("passport")
-                    ->flow('authorizationCode', function (OAuthFlow $flow) {
+                    ->flow('clientCredentials', function (OAuthFlow $flow) {
                         $flow
-                            ->authorizationUrl(config('app.url') . '/oauth/authorize')
                             ->tokenUrl(config('app.url') . '/oauth/token')
                             ->addScope('*', 'all');
                     }));
