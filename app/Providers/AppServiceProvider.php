@@ -14,6 +14,7 @@ use App\Http\Controllers\ChannelPublishController;
 use App\Http\Repositories\ChannelPublishRepository;
 use App\Http\Controllers\ChannelSubscribeController;
 use App\Http\Repositories\ChannelSubscribeRepository;
+use Dedoc\Scramble\Scramble;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,9 +23,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
-    }
+    public function boot() {}
 
     /**
      * Register any application services.
@@ -48,5 +47,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->when(ChannelSubscribeController::class)
             ->needs(RepositoryInterface::class)
             ->give(ChannelSubscribeRepository::class);
+
+        Scramble::ignoreDefaultRoutes();
     }
 }

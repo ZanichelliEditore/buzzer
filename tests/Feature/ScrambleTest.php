@@ -8,7 +8,7 @@ class ScrambleTest extends TestCaseWithoutMiddleware
 {
     public function testScrambleRoute()
     {
-        $response = $this->withMiddleware()->get('docs/api');
+        $response = $this->withMiddleware()->get('api/documentation');
         $response->assertStatus(200);
     }
 

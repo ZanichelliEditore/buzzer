@@ -20,7 +20,10 @@ class ScrambleServiceProvider extends ServiceProvider
     public function boot()
     {
         Scramble::configure()
-
+            ->expose(
+                ui: '/api/documentation',
+                document: '/docs/api.json',
+            )
             ->withDocumentTransformers(function (OpenApi $openApi) {
 
                 // INFO: define security schemas
