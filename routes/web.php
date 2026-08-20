@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Dedoc\Scramble\Scramble;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 $middleware = [];
 $middlewareCheckRole = [];
 if (env("USE_ZANICHELLI_IDP")) {
@@ -25,7 +27,7 @@ Route::group($middleware, function () use ($middlewareCheckRole) {
     })->name('unauthorized');
 
     Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
-   
+
     Route::group($middlewareCheckRole, function () {
         Route::prefix('admin')->group(function () {
             Route::prefix('channels')->group(function () {
@@ -55,7 +57,6 @@ Route::group($middleware, function () use ($middlewareCheckRole) {
 
                 Route::post('{id}/channels', 'ChannelPublishController@store')->where('id', '[0-9]+');
                 Route::delete('{publisher_id}/channels/{channel_id}', 'ChannelPublishController@destroy')->where('publisher_id', '[0-9]+')->where('channel_id', '[0-9]+');
-
             });
 
             Route::prefix('failedJobs')->group(function () {
@@ -70,8 +71,12 @@ Route::group($middleware, function () use ($middlewareCheckRole) {
 
         Route::get('/{any}', function () {
             return view('app');
-        })->where("any", ".*");
+        })->where("any", "^(?!docs).*"); // Exclude /docs/* paths (for Scramble documentation)
     });
+});
+
+Route::middleware([])->group(function () {
+    Scramble::registerJsonSpecificationRoute('/docs/api.json');
 });
 
 Route::get('/login', function () {

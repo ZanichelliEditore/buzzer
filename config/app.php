@@ -161,7 +161,6 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        L5Swagger\L5SwaggerServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -176,7 +175,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\ResponseMacroServiceProvider::class,
+        App\Providers\ScrambleServiceProvider::class,
 
     ],
 

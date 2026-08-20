@@ -6,69 +6,20 @@ use Illuminate\Http\Request;
 use App\Http\Requests\SubscriberRequest;
 use App\Http\Resources\SubscriberResource;
 use App\Http\Repositories\RepositoryInterface;
+use App\Http\Repositories\SubscriberRepository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 
 class SubscriberController extends Controller
 {
-    protected $subscriberRepository;
+    protected SubscriberRepository $subscriberRepository;
 
     public function __construct(RepositoryInterface $subscriberRepository)
     {
         $this->subscriberRepository = $subscriberRepository;
     }
 
-    /**
-     * @OA\Get(
-     *      path="/api/subscribers",
-     *      summary="List of all subscribers",
-     *      tags={"subscribers"},
-     *      security={{"passport":{}}},
-     *      description="Use to get the list of all subscribers",
-     *      @OA\Parameter(
-     *         name="q",
-     *         in="query",
-     *         description="values to filter returned data",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     *      @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         description="maximum number of results to return",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int32"
-     *         )
-     *     ),
-     *     @OA\Parameter(
-     *         name="order",
-     *         in="query",
-     *         description="type of order: ASC, DESC",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *     @OA\Parameter(
-     *         name="orderBy",
-     *         in="query",
-     *         description="field to order: id - name(default) - host - created_at - updated_at",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          ref="#/components/responses/Success200"
-     *      )
-     *
-     * )
-     */
     public function getList(Request $request)
     {
         $query = $request->input('q');
@@ -79,47 +30,7 @@ class SubscriberController extends Controller
         return SubscriberResource::collection($retriviedSubscribers);
     }
 
-    /**
-     * @OA\Post(
-     *      path="/api/subscribers",
-     *      summary="Save new subscriber",
-     *      tags={"subscribers"},
-     *      security={{"passport":{}}},
-     *      description="Use to store a new subscriber",
-     *      @OA\RequestBody(
-     *          description="Subscriber object that needs to be created",
-     *          @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  schema="Subscriber",
-     *                  type="object",
-     *                  @OA\Property(
-     *                      property="name",
-     *                      type="string",
-     *                      example="subscriber1"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="host",
-     *                      type="string",
-     *                      example="https://host1-test/"
-     *                  )
-     *              ),
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=201,
-     *          ref="#/components/responses/Success201",
-     *      ),
-     *      @OA\Response(
-     *          response=500,
-     *          ref="#/components/responses/Error500",
-     *      ),
-     *      @OA\Response(
-     *          response=422,
-     *          ref="#/components/responses/Error422",
-     *      )
-     * )
-     */
+    #[ScrambleResponse(status: 201, description: 'Subscriber successfully saved', type: 'array{message: string, subscriber: SubscriberResource}')]
     public function store(SubscriberRequest $request)
     {
         $subscriber = $request->only([
@@ -131,60 +42,29 @@ class SubscriberController extends Controller
         $subscriber['host'] = trim($subscriber['host'], '/') . '/';
 
         if ($this->subscriberRepository->get($subscriber['host'])) {
-            return response()->error422('host', "Duplicated subscriber.");
+            return $this->error422('host', "Duplicated subscriber.");
         }
 
         try {
             $createdSubscriber = $this->subscriberRepository->save((object) $subscriber);
         } catch (\Exception $e) {
-            return response()->error500(__('messages.SaveError') . ' ' . json_encode($subscriber));
+            return $this->error500(__('messages.SaveError') . ' ' . json_encode($subscriber));
         }
 
-        return response()->success201("Subscriber successfully saved", "subscriber", $createdSubscriber);
+        return $this->success201("Subscriber successfully saved", "subscriber", $createdSubscriber);
     }
 
-    /**
-     * @OA\Delete(
-     *      path="/api/subscribers/{id}",
-     *      summary="Delete the subscriber",
-     *      tags={"subscribers"},
-     *      security={{"passport":{}}},
-     *      description="Insert the subscriber id that you want to delete",
-     *      @OA\Parameter(
-     *          in="path",
-     *          required=true,
-     *          description="subscriber id",
-     *          name="id",
-     *          @OA\Schema(
-     *              type="integer",
-     *              minimum=1
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=500,
-     *          ref="#/components/responses/Error500"
-     *      ),
-     *      @OA\Response(
-     *          response=404,
-     *          ref="#/components/responses/Error404"
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          ref="#/components/responses/Success200"
-     *      )
-     * )
-     */
     public function destroy(int $id)
     {
         $subscriber = $this->subscriberRepository->find($id);
         if (!$subscriber) {
-            return response()->error404(__('messages.Subscriber') . $id);
+            return $this->error404(__('messages.Subscriber') . $id);
         }
         if (!$this->subscriberRepository->delete($subscriber)) {
-            return response()->error500(__('messages.DeleteError') . $subscriber);
+            return $this->error500(__('messages.DeleteError') . $subscriber->id);
         }
 
-        return response()->success200(__('messages.DeleteSuccess'), [
+        return $this->success200(__('messages.DeleteSuccess'), [
             'action' => 'DELETE',
             // TO DO: add user id key value pair
             'object_type' => 'subscriber',
@@ -192,132 +72,32 @@ class SubscriberController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/subscribers/{id}",
-     *     summary="Find a subscriber by id",
-     *     tags={"subscribers"},
-     *     security={{"passport":{}}},
-     *     description="Use to get a subscriber by id",
-     *     operationId="SubscriberController.getSubscriber",
-     *     @OA\Parameter(
-     *        in="path",
-     *        required=true,
-     *        description="Subscriber id",
-     *        name="id",
-     *        @OA\Schema(
-     *            type="integer",
-     *            minimum=1
-     *        )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         ref="#/components/responses/Success200"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         ref="#/components/responses/Error404"
-     *     )
-     * )
-     *
-     * Response to route /api/subscribers/{id}
-     *
-     * @param  int  $id
-     * @return $subscriber
-     *
-     */
-    public function getSubscriber($id)
+    public function getSubscriber(int $id)
     {
         $subscriber = $this->subscriberRepository->find($id);
         if (!$subscriber) {
-            return response()->error404(__('messages.Subscriber') . $id);
+            return $this->error404(__('messages.Subscriber') . $id);
         }
         return new SubscriberResource($subscriber);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/subscribers/{id}/pause",
-     *     summary="Pauses a subscriber from receiving messages",
-     *     tags={"subscribers"},
-     *     security={{"passport":{}}},
-     *     description="Use to pauses a subscriber from receiving messages for 1 hour",
-     *     operationId="SubscriberController.pauseSubscriber",
-     *     @OA\Parameter(
-     *        in="path",
-     *        required=true,
-     *        description="Subscriber id",
-     *        name="id",
-     *        @OA\Schema(
-     *            type="integer",
-     *            minimum=1
-     *        )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         ref="#/components/responses/Success200"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         ref="#/components/responses/Error404"
-     *     )
-     * )
-     *
-     * Response to route /api/subscribers/{id}/pause
-     *
-     * @param  int  $id
-     *
-     */
-    public function pauseSubscriber($id)
+    public function pauseSubscriber(int $id)
     {
         $subscriber = $this->subscriberRepository->find($id);
         if (!$subscriber) {
-            return response()->error404(__('messages.Subscriber') . $id);
+            return $this->error404(__('messages.Subscriber') . $id);
         }
         Cache::put(config('cache.subscriber_paused_key_prefix') . $id, true, config('cache.subscriber_paused_ttl'));
-        return response()->success204();
+        return $this->success204();
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/subscribers/{id}/restore",
-     *     summary="Restore a subscriber from receiving messages",
-     *     tags={"subscribers"},
-     *     security={{"passport":{}}},
-     *     description="Use to restore a subscriber from receiving messages",
-     *     operationId="SubscriberController.restoreSubscriber",
-     *     @OA\Parameter(
-     *        in="path",
-     *        required=true,
-     *        description="Subscriber id",
-     *        name="id",
-     *        @OA\Schema(
-     *            type="integer",
-     *            minimum=1
-     *        )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         ref="#/components/responses/Success200"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         ref="#/components/responses/Error404"
-     *     )
-     * )
-     *
-     * Response to route /api/subscribers/{id}/restore
-     *
-     * @param  int  $id
-     *
-     */
-    public function restoreSubscriber($id)
+    public function restoreSubscriber(int $id)
     {
         $subscriber = $this->subscriberRepository->find($id);
         if (!$subscriber) {
-            return response()->error404(__('messages.Subscriber') . $id);
+            return $this->error404(__('messages.Subscriber') . $id);
         }
         Cache::forget(Config::get('cache.subscriber_paused_key_prefix') . $id);
-        return response()->success204();
+        return $this->success204();
     }
 }

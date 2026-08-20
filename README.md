@@ -164,15 +164,13 @@ You can run tests using the PHPUnit binary located in the vendor directory
 
 ### Generate documentation
 
-This project uses Swagger-php to generate API documentation, following the OpenAPI specifications.
+This project uses Scrumble to generate API documentation.
 
-- Swagger-PHP reference: <http://zircote.com/swagger-php/Getting-started.html>
-
-- OpenAPI specification: <https://swagger.io/docs/specification/basic-structure/>
+- Scrumble reference: <https://scramble.dedoc.co/usage/getting-started>
 
 ### View documentation
 
-Once you've built your containers, the swagger documentation is available at <http://localhost:8085/api/documentation>
+Once you've built your containers, the scrumble documentation is available at <http://localhost:8085/api/documentation>
 
 ## Logs
 
