@@ -16,8 +16,8 @@
         "laravel/telescope": "^5.0",
         "laravel/tinker": "^3.0",
         "laravel/ui": "^4.0",
-        "zanichelli/healthcheck": "^1.1",
-        "zanichelli/idp-extensions": "^3.8"
+        "zanichelli/healthcheck": "^1.1.7",
+        "zanichelli/idp-extensions": "^3.8.3"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^2.1",

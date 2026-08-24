@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "973d16f4d132ccc98f7d6a067b0779be",
+    "content-hash": "a446927a74d6f195bd84617514ea5dac",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7371,20 +7371,20 @@
         },
         {
             "name": "zanichelli/healthcheck",
-            "version": "v1.1.6",
+            "version": "v1.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZanichelliEditore/health-check.git",
-                "reference": "0a283d20d65bcc2e24cc69a776bb5ad0f6918d8f"
+                "reference": "b71ba16640a66b8c5a35195bf5c2240c9828df67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZanichelliEditore/health-check/zipball/0a283d20d65bcc2e24cc69a776bb5ad0f6918d8f",
-                "reference": "0a283d20d65bcc2e24cc69a776bb5ad0f6918d8f",
+                "url": "https://api.github.com/repos/ZanichelliEditore/health-check/zipball/b71ba16640a66b8c5a35195bf5c2240c9828df67",
+                "reference": "b71ba16640a66b8c5a35195bf5c2240c9828df67",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^5.6|^6|^7|^8|^9|^10|^11|^12",
+                "laravel/framework": "^5.6|^6|^7|^8|^9|^10|^11|^12|^13",
                 "league/flysystem-aws-s3-v3": "^1.0@dev|^2.0@dev|^3.0@dev"
             },
             "require-dev": {
@@ -7418,28 +7418,28 @@
             "description": "Health check package provides security target for the project",
             "support": {
                 "issues": "https://github.com/ZanichelliEditore/health-check/issues",
-                "source": "https://github.com/ZanichelliEditore/health-check/tree/v1.1.6"
+                "source": "https://github.com/ZanichelliEditore/health-check/tree/v1.1.7"
             },
-            "time": "2025-05-06T10:24:44+00:00"
+            "time": "2026-05-28T06:43:37+00:00"
         },
         {
             "name": "zanichelli/idp-extensions",
-            "version": "v3.8.0",
+            "version": "v3.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZanichelliEditore/idp-extension.git",
-                "reference": "0138554bdeb4729c8f3d2afcb9d040ca1eb76c01"
+                "reference": "691129b90419e43c6f78664bb1a3ddfcd980eaeb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZanichelliEditore/idp-extension/zipball/0138554bdeb4729c8f3d2afcb9d040ca1eb76c01",
-                "reference": "0138554bdeb4729c8f3d2afcb9d040ca1eb76c01",
+                "url": "https://api.github.com/repos/ZanichelliEditore/idp-extension/zipball/691129b90419e43c6f78664bb1a3ddfcd980eaeb",
+                "reference": "691129b90419e43c6f78664bb1a3ddfcd980eaeb",
                 "shasum": ""
             },
             "require": {
                 "firebase/php-jwt": "^6.10",
                 "guzzlehttp/guzzle": "~7.0",
-                "laravel/framework": "^8|^9|^10|^11|^12"
+                "laravel/framework": "^8|^9|^10|^11|^12|^13"
             },
             "require-dev": {
                 "mockery/mockery": "^1.0",
@@ -7471,9 +7471,9 @@
             "description": "Classes to interact with the Zanichelli identity provider",
             "support": {
                 "issues": "https://github.com/ZanichelliEditore/idp-extension/issues",
-                "source": "https://github.com/ZanichelliEditore/idp-extension/tree/v3.8.0"
+                "source": "https://github.com/ZanichelliEditore/idp-extension/tree/v3.8.3"
             },
-            "time": "2025-05-06T12:44:57+00:00"
+            "time": "2026-08-24T12:20:52+00:00"
         }
     ],
     "packages-dev": [
