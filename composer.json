@@ -12,7 +12,7 @@
         "dedoc/scramble": "^0.13.26",
         "laravel/framework": "^12.0",
         "laravel/legacy-factories": "^1.1",
-        "laravel/passport": "^12.0",
+        "laravel/passport": "^13.4.4",
         "laravel/telescope": "^5.18.0",
         "laravel/tinker": "^3.0",
         "laravel/ui": "^4.6.3",
@@ -31,7 +31,15 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "php-http/discovery": true
+        },
+        "policy": {
+            "advisories": {
+                "ignore-id": [
+                    "PKSA-y2cr-5h3j-g3ys"
+                ]
+            }
         }
     },
     "extra": {
