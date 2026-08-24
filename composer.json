@@ -15,7 +15,7 @@
         "laravel/passport": "^12.0",
         "laravel/telescope": "^5.18.0",
         "laravel/tinker": "^3.0",
-        "laravel/ui": "^4.0",
+        "laravel/ui": "^4.6.3",
         "zanichelli/healthcheck": "^1.1.7",
         "zanichelli/idp-extensions": "^3.8.3"
     },
