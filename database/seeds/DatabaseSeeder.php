@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
         ]);
         DB::table('oauth_clients')->insert([
             'id' => 1,
-            'secret' => 'secretOAuth2Example',
+            'secret' => Hash::make('secretOAuth2Example'),
             'name' => 'test',
             'redirect' => 'http://test.example',
             'personal_access_client' => 0,
