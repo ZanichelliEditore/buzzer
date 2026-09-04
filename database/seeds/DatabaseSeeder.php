@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -80,11 +81,12 @@ class DatabaseSeeder extends Seeder
         ]);
         DB::table('oauth_clients')->insert([
             'id' => 1,
+            'owner_id' => null,
+            'owner_type' => null,
             'secret' => Hash::make('secretOAuth2Example'),
             'name' => 'test',
-            'redirect' => 'http://test.example',
-            'personal_access_client' => 0,
-            'password_client' => 0,
+            'redirect_uris' => json_encode(['http://test.example']),
+            'grant_types' => json_encode(['authorization_code', 'refresh_token']),
             'revoked' => 0
         ]);
     }
