@@ -15,6 +15,7 @@ use App\Http\Repositories\ChannelPublishRepository;
 use App\Http\Controllers\ChannelSubscribeController;
 use App\Http\Repositories\ChannelSubscribeRepository;
 use Dedoc\Scramble\Scramble;
+use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,7 +24,11 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot() {}
+    public function boot()
+    {
+        Passport::$clientUuids = false;
+        Passport::$validateKeyPermissions = false;
+    }
 
     /**
      * Register any application services.
