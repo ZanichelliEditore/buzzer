@@ -86,7 +86,7 @@ class DatabaseSeeder extends Seeder
             'secret' => Hash::make('secretOAuth2Example'),
             'name' => 'test',
             'redirect_uris' => json_encode(['http://test.example']),
-            'grant_types' => json_encode(['authorization_code', 'refresh_token']),
+            'grant_types' => json_encode(['client_credentials']),
             'revoked' => 0
         ]);
     }
