@@ -32,7 +32,7 @@ jobs:
           done
           echo "MySQL non pronto"; docker logs buzzer_db; exit 1
       - name: Init database
-        run: docker exec -i -u root buzzer_app php artisan migrate --force
+        run: docker exec -i -u root buzzer_app php artisan migrate
       - name: Run tests and generate xml report
         run: docker exec -i -u root buzzer_app vendor/bin/phpunit --coverage-clover=coverage.xml
       - name: Upload coverage reports to Codecov
