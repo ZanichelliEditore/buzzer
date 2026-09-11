@@ -210,8 +210,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
         $response->assertStatus(Response::HTTP_NO_CONTENT);
 
-        Cache::shouldHaveReceived('put')
-            ->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, 3600);
+        Cache::shouldHaveReceived('put')->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, config('cache.subscriber_paused_ttl'));
     }
 
     public function testPauseNotFound()
