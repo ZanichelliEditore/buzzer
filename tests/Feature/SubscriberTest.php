@@ -184,7 +184,8 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
         $subscriber = factory(Subscriber::class)->make();
         $subscriber->id = 1;
-        Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused_');
+        Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
+        Config::set('cache.subscriber_paused_ttl', 3600);
 
         dump([
             'PREFIX'     => Config::get('cache.subscriber_paused_key_prefix'),
