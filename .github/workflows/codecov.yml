@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Init application
+            - name: Init application
         run: |
           cp .env.example .env
           sed -i 's/^DB_HOST=.*/DB_HOST=buzzer_db/' .env
@@ -24,8 +24,15 @@ jobs:
           docker exec -i -u root buzzer_app composer install
           docker exec -i -u root buzzer_app php artisan key:generate
           docker exec -i -u root buzzer_app php artisan config:clear
+      - name: Wait for MySQL
+        run: |
+          for i in $(seq 1 60); do
+            docker exec -i buzzer_db mysqladmin ping -h 127.0.0.1 --silent && exit 0
+            sleep 2
+          done
+          echo "MySQL non pronto"; docker logs buzzer_db; exit 1
       - name: Init database
-        run: docker exec -i -u root buzzer_app php artisan migrate
+        run: docker exec -i -u root buzzer_app php artisan migrate --force
       - name: Run tests and generate xml report
         run: docker exec -i -u root buzzer_app vendor/bin/phpunit --coverage-clover=coverage.xml
       - name: Upload coverage reports to Codecov
