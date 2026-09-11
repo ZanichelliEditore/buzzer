@@ -30,7 +30,7 @@ jobs:
             docker exec -i buzzer_db mysqladmin ping -h 127.0.0.1 --silent && exit 0
             sleep 2
           done
-          echo "MySQL non pronto"; docker logs buzzer_db; exit 1
+          echo "MySQL not ready"; docker logs buzzer_db; exit 1
       - name: Init database
         run: docker exec -i -u root buzzer_app php artisan migrate
       - name: Run tests and generate xml report
