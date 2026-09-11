@@ -187,12 +187,6 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
         Config::set('cache.subscriber_paused_ttl', 3600);
 
-        dump([
-            'PREFIX'     => Config::get('cache.subscriber_paused_key_prefix'),
-            'CACHE_DRV'  => Config::get('cache.default'),
-            'QUEUE_CONN' => Config::get('queue.default'),
-        ]);
-
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 "find" => $subscriber,
