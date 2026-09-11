@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-            - name: Init application
+      - name: Init application
         run: |
           cp .env.example .env
           sed -i 's/^DB_HOST=.*/DB_HOST=buzzer_db/' .env
