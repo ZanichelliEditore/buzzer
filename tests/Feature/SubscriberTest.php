@@ -176,12 +176,6 @@ class SubscriberTest extends TestCaseWithoutMiddleware
     public function testPause()
     {
         Cache::spy();
-
-        Cache::shouldReceive('put')->andReturnUsing(function (...$args) {
-            dump(['PUT CHIAMATO CON' => $args]);
-            return true;
-        });
-
         $subscriber = factory(Subscriber::class)->make();
         $subscriber->id = 1;
         Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
@@ -197,11 +191,6 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
 
         $response = $this->json('POST', '/api/subscribers/1/pause');
-
-        dump([
-            'STATUS' => $response->getStatusCode(),
-            'BODY'   => $response->getContent(),
-        ]);
 
         $response->assertStatus(Response::HTTP_NO_CONTENT);
 
