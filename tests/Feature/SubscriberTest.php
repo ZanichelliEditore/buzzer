@@ -176,9 +176,22 @@ class SubscriberTest extends TestCaseWithoutMiddleware
     public function testPause()
     {
         Cache::spy();
+
+        Cache::shouldReceive('put')->andReturnUsing(function (...$args) {
+            dump(['PUT CHIAMATO CON' => $args]);
+            return true;
+        });
+
         $subscriber = factory(Subscriber::class)->make();
         $subscriber->id = 1;
         Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused_');
+
+        dump([
+            'PREFIX'     => Config::get('cache.subscriber_paused_key_prefix'),
+            'CACHE_DRV'  => Config::get('cache.default'),
+            'QUEUE_CONN' => Config::get('queue.default'),
+        ]);
+
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 "find" => $subscriber,
@@ -187,9 +200,18 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->once()
             ->getMock();
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
+
         $response = $this->json('POST', '/api/subscribers/1/pause');
+
+        dump([
+            'STATUS' => $response->getStatusCode(),
+            'BODY'   => $response->getContent(),
+        ]);
+
         $response->assertStatus(Response::HTTP_NO_CONTENT);
-        Cache::shouldHaveReceived('put')->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, 3600);
+
+        Cache::shouldHaveReceived('put')
+            ->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, 3600);
     }
 
     public function testPauseNotFound()
