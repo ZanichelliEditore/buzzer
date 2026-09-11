@@ -227,7 +227,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         Cache::spy();
         $subscriber = factory(Subscriber::class)->make();
         $subscriber->id = 1;
-        Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused_');
+        Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 "find" => $subscriber,
