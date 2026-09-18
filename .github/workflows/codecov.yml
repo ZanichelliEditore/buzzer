@@ -23,7 +23,7 @@ jobs:
           docker compose -f docker-compose.dev.yml up --build -d
           docker exec -i -u root buzzer_app composer install
           docker exec -i -u root buzzer_app php artisan key:generate
-          docker exec -i -u root buzzer_app php artisan config:cache
+          docker exec -i -u root buzzer_app php artisan config:clear
       - name: Wait for MySQL
         run: |
           for i in $(seq 1 60); do
