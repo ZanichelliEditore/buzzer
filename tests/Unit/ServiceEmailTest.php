@@ -30,7 +30,6 @@ class ServiceEmailTest extends TestCaseWithoutMiddleware
 
         $mailerServiceReflection = new ReflectionClass(Mailer::class);
         $method = $mailerServiceReflection->getMethod("retrieveToken");
-        $method->setAccessible(true);
         $response = $method->invokeArgs($this->mailer, []);
 
         $this->assertEquals($response, $token);
@@ -50,7 +49,6 @@ class ServiceEmailTest extends TestCaseWithoutMiddleware
 
         $mailerServiceReflection = new \ReflectionClass(Mailer::class);
         $method = $mailerServiceReflection->getMethod("retrieveToken");
-        $method->setAccessible(true);
         $method->invokeArgs($this->mailer, []);
     }
 
