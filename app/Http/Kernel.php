@@ -3,7 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use Laravel\Passport\Http\Middleware\CheckClientCredentials;
+use Laravel\Passport\Http\Middleware\CheckToken;
 
 class Kernel extends HttpKernel
 {
@@ -65,7 +65,7 @@ class Kernel extends HttpKernel
         'basicAuth' =>  \App\Http\Middleware\BasicAuth::class,
         'idp' => \Zanichelli\IdpExtension\Http\Middleware\IdpMiddleware::class,
         'check.role' => \App\Http\Middleware\CheckRole::class,
-        'client' => CheckClientCredentials::class,
+        'client' => CheckToken::class,
     ];
 
 

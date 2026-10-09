@@ -178,6 +178,9 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         Cache::spy();
         $subscriber = factory(Subscriber::class)->make();
         $subscriber->id = 1;
+        Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
+        Config::set('cache.subscriber_paused_ttl', 3600);
+
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 "find" => $subscriber,
@@ -186,9 +189,12 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->once()
             ->getMock();
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
+
         $response = $this->json('POST', '/api/subscribers/1/pause');
+
         $response->assertStatus(Response::HTTP_NO_CONTENT);
-        Cache::shouldHaveReceived('put')->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, 3600);
+
+        Cache::shouldHaveReceived('put')->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, config('cache.subscriber_paused_ttl'));
     }
 
     public function testPauseNotFound()
@@ -210,6 +216,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
         Cache::spy();
         $subscriber = factory(Subscriber::class)->make();
         $subscriber->id = 1;
+        Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 "find" => $subscriber,
