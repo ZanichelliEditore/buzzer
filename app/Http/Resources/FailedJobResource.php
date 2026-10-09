@@ -34,6 +34,7 @@ class FailedJobResource extends JsonResource
             'exception' => $this->exception,
             'failed_at' => $this->failed_at,
             'subscriber' => $channelSubscribe ? $channelSubscribe->subscriber->name : '',
+            'subscriber_email' => $channelSubscribe ? $channelSubscribe->subscriber->email : null,
             'channel' => $channelSubscribe ? $channelSubscribe->channel->name : ''
         ];
     }

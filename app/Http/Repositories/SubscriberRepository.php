@@ -79,7 +79,8 @@ class SubscriberRepository implements RepositoryInterface
     {
         return Subscriber::create([
             'name' => $subscriber->name,
-            'host' => $subscriber->host
+            'host' => $subscriber->host,
+            'email' => $subscriber->email
         ]);
     }
 

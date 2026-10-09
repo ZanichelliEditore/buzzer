@@ -25,7 +25,8 @@ class SubscriberRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:50',
-            'host' => 'required|string|max:150|url'
+            'host' => 'required|string|max:150|url',
+            'email' => 'nullable|string|max:150'
         ];
     }
 }

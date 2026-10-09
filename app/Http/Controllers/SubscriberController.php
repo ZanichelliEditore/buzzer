@@ -35,7 +35,8 @@ class SubscriberController extends Controller
     {
         $subscriber = $request->only([
             'name',
-            'host'
+            'host',
+            'email'
         ]);
         $createdSubscriber = null;
 
