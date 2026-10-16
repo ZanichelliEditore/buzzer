@@ -9,7 +9,7 @@ use App\Models\ChannelPublish;
 
 $factory->define(ChannelPublish::class, function (Faker $faker) {
     return [
-        'channel_id' => factory(Channel::class)->create()->id,
+        'channel_id' => Channel::factory()->create()->id,
         'publisher_id' => factory(Publisher::class)->create()->id
     ];
 });

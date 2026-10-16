@@ -12,7 +12,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
 {
     public function testShowSubscribers()
     {
-        $channelSubscribe = factory(ChannelSubscribe::class)->create();
+        $channelSubscribe = ChannelSubscribe::factory()->create();
         $subscriber = Subscriber::find($channelSubscribe->subscriber_id);
         unset($subscriber['created_at']);
         unset($subscriber['updated_at']);

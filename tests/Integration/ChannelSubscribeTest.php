@@ -23,7 +23,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
     #[DataProvider('getEndpoint')]
     public function testAdd($endpoint, $expectedEndpoint)
     {
-        $newChannelSubscribe = factory(ChannelSubscribe::class)->make(['endpoint' => $endpoint]);
+        $newChannelSubscribe = ChannelSubscribe::factory()->make(['endpoint' => $endpoint]);
 
         $response = $this->json(
             'POST',
@@ -42,7 +42,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 
     public function testAddDuplicate()
     {
-        $newChannelSubscribe = factory(ChannelSubscribe::class)->make();
+        $newChannelSubscribe = ChannelSubscribe::factory()->make();
         $response = $this->json('POST', '/api/subscribers/' . $newChannelSubscribe->subscriber_id . '/channels', $newChannelSubscribe->toArray());
         $response->assertStatus(201);
         unset($newChannelSubscribe->created_at);
@@ -57,7 +57,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 
     public function testShow()
     {
-        $channelSubscribe = factory(ChannelSubscribe::class)->create();
+        $channelSubscribe = ChannelSubscribe::factory()->create();
         $response = $this->get('/api/subscribers/' . $channelSubscribe->subscriber_id . '/channels');
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -73,7 +73,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $channelSubscribe = factory(ChannelSubscribe::class)->create();
+        $channelSubscribe = ChannelSubscribe::factory()->create();
         $response = $this->json(
             'DELETE',
             '/api/channel-subscriber/' . $channelSubscribe->id

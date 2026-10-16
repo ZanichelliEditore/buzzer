@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ChannelSubscribe extends Model
 {
+    use HasFactory;
+
     protected $table = 'channel_subscribe';
 
     protected $fillable = ['subscriber_id', 'channel_id', 'endpoint', 'authentication', 'username', 'password'];

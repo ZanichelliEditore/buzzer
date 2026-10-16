@@ -39,7 +39,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testList()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $subscriber->id = 1;
         $subscriber->created_at = '2019-09-09 12:37:55';
         $subscriber->updated_at = '2019-09-09 12:37:55';
@@ -78,7 +78,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testShow()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 'find' => $subscriber
@@ -110,7 +110,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testFailSave()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $request = [
             'name' => $subscriber->name,
             'host' => $subscriber->host
@@ -142,7 +142,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testFailDestroy()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 'find' => $subscriber,
@@ -158,7 +158,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
 
@@ -176,7 +176,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
     public function testPause()
     {
         Cache::spy();
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $subscriber->id = 1;
         Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
         Config::set('cache.subscriber_paused_ttl', 3600);
@@ -214,7 +214,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
     public function testRestore()
     {
         Cache::spy();
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $subscriber->id = 1;
         Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
