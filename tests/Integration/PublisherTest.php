@@ -3,6 +3,7 @@
 namespace Tests\Integration;
 
 use App\Models\Publisher;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Tests\TestCaseWithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -159,5 +160,52 @@ class PublisherTest extends TestCaseWithoutMiddleware
                 ],
             ])
             ->assertJsonCount($limit, 'data');
+    }
+
+    private function searchIds(string $q): array
+    {
+        $response = $this->get('/api/publishers?' . http_build_query(['q' => $q]));
+        $response->assertStatus(Response::HTTP_OK);
+
+        return collect($response->json('data'))->pluck('id')->all();
+    }
+
+    public function testSearchByNameWord()
+    {
+        $token = Str::random(12);
+        $match = factory(Publisher::class)->create(['name' => "alpha-{$token}"]);
+        factory(Publisher::class)->create(['name' => 'unrelated']);
+
+        $this->assertSame([$match->id], $this->searchIds($token));
+    }
+
+    public function testSearchByHostWord()
+    {
+        $token = Str::random(12);
+        $match = factory(Publisher::class)->create(['host' => "http://{$token}.zanichelli"]);
+        factory(Publisher::class)->create();
+
+        $this->assertSame([$match->id], $this->searchIds($token));
+    }
+
+    public function testSearchMultipleWordsUsesAndSemantics()
+    {
+        $nameToken = Str::random(12);
+        $hostToken = Str::random(12);
+        $both = factory(Publisher::class)->create([
+            'name' => "name-{$nameToken}",
+            'host' => "http://{$hostToken}.zanichelli",
+        ]);
+        factory(Publisher::class)->create(['name' => "name-{$nameToken}"]);
+        factory(Publisher::class)->create(['host' => "http://{$hostToken}-other.zanichelli"]);
+
+        $this->assertSame([$both->id], $this->searchIds("{$nameToken}  {$hostToken}"));
+    }
+
+    public function testSearchWithoutMatchReturnsEmptyList()
+    {
+        factory(Publisher::class)->create();
+
+        $this->assertSame([], $this->searchIds(Str::random(30)));
     }
 }
