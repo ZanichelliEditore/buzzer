@@ -118,7 +118,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
     public function testShowPublisher200Response()
     {
         $channel = Channel::factory()->make();
-        $publisher = factory(Publisher::class)->make();
+        $publisher = Publisher::factory()->make();
         $channel->publishers = collect([$publisher]);
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
             ->shouldReceive([

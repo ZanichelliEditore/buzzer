@@ -34,7 +34,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 
     public function testFailSave()
     {
-        $channelPublish = factory(ChannelPublish::class)->make();
+        $channelPublish = ChannelPublish::factory()->make();
         $request = [
             'channel_id' => $channelPublish->channel_id
         ];
@@ -61,7 +61,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 
     public function testShowNoRegistration()
     {
-        $subscriber = factory(Publisher::class)->make();
+        $subscriber = Publisher::factory()->make();
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
             ->shouldReceive([
                 'find' => $subscriber
@@ -76,7 +76,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 
     public function testFailfindPublisher()
     {
-        $channelPublish = factory(ChannelPublish::class)->make();
+        $channelPublish = ChannelPublish::factory()->make();
         $request = [
             'channel_id' => $channelPublish->channel_id
         ];
@@ -96,7 +96,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 
     public function testDuplicatePublisher()
     {
-        $channelPublish = factory(ChannelPublish::class)->make();
+        $channelPublish = ChannelPublish::factory()->make();
         $request = [
             'channel_id' => $channelPublish->channel_id
         ];
@@ -131,7 +131,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 
     public function testFailDestroy()
     {
-        $channelPublish = factory(ChannelPublish::class)->make();
+        $channelPublish = ChannelPublish::factory()->make();
         $mock = Mockery::mock(ChannelPublishRepository::class)->makePartial()
             ->shouldReceive([
                 'getByFilter' => $channelPublish,
@@ -147,7 +147,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $channelPublish = factory(ChannelPublish::class)->make();
+        $channelPublish = ChannelPublish::factory()->make();
         $mock = Mockery::mock(ChannelPublishRepository::class)->makePartial()
             ->shouldReceive([
                 'getByFilter' => $channelPublish,

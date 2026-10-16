@@ -45,7 +45,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
 
     public function testShowPublishers()
     {
-        $channelPublish = factory(ChannelPublish::class)->create();
+        $channelPublish = ChannelPublish::factory()->create();
         $publisher = Publisher::find($channelPublish->publisher_id);
         $response = $this->json('GET', '/api/channels/' . $channelPublish->channel_id . '/publishers');
         $response->assertStatus(200);

@@ -44,7 +44,7 @@ class FailedJobTest extends TestCaseWithoutMiddleware
     {
         $mock = Mockery::mock(FailedJobRepository::class)->makePartial()
             ->shouldReceive([
-                'find' => factory(FailedJob::class)->make(['id' => $id])
+                'find' => FailedJob::factory()->make(['id' => $id])
             ])
             ->withAnyArgs()
             ->getMock();
@@ -63,7 +63,7 @@ class FailedJobTest extends TestCaseWithoutMiddleware
         $channelSubscribe = ChannelSubscribe::factory()->create();
         $sendMessageJob = new SendMessageJob(new SendMessageEvent(new Message('messaggio'), 'host', $channelSubscribe, 'highpriority', 'channelName', 'publisherName'));
 
-        $failedJob = factory(FailedJob::class)->make([
+        $failedJob = FailedJob::factory()->make([
             'payload' => json_encode(["data" => ["command" => serialize($sendMessageJob)]]),
 
         ]);

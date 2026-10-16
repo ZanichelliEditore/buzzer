@@ -24,7 +24,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testAdd()
     {
-        $newPublisher = factory(Publisher::class)->make();
+        $newPublisher = Publisher::factory()->make();
         $response = $this->json('POST', '/api/publishers/', $newPublisher->toArray());
         $response->assertStatus(201);
         unset($newPublisher->created_at);
@@ -35,7 +35,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testShow()
     {
-        $publisher = factory(Publisher::class)->create();
+        $publisher = Publisher::factory()->create();
         $response = $this->get('/api/publishers/' . $publisher->id);
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -129,7 +129,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $publisher = factory(Publisher::class)->create();
+        $publisher = Publisher::factory()->create();
         $response = $this->json('DELETE', '/api/publishers/' . $publisher->id);
         $response->assertStatus(200);
         $this->assertDatabaseMissing('publishers', [
@@ -139,7 +139,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testlist()
     {
-        factory(Publisher::class, 20)->create();
+        Publisher::factory()->count(20)->create();
 
         $count = count(Publisher::all());
         $response = $this->get('/api/publishers');
@@ -173,8 +173,8 @@ class PublisherTest extends TestCaseWithoutMiddleware
     public function testSearchByNameWord()
     {
         $token = Str::random(12);
-        $match = factory(Publisher::class)->create(['name' => "alpha-{$token}"]);
-        factory(Publisher::class)->create(['name' => 'unrelated']);
+        $match = Publisher::factory()->create(['name' => "alpha-{$token}"]);
+        Publisher::factory()->create(['name' => 'unrelated']);
 
         $this->assertSame([$match->id], $this->searchIds($token));
     }
@@ -182,8 +182,8 @@ class PublisherTest extends TestCaseWithoutMiddleware
     public function testSearchByHostWord()
     {
         $token = Str::random(12);
-        $match = factory(Publisher::class)->create(['host' => "http://{$token}.zanichelli"]);
-        factory(Publisher::class)->create();
+        $match = Publisher::factory()->create(['host' => "http://{$token}.zanichelli"]);
+        Publisher::factory()->create();
 
         $this->assertSame([$match->id], $this->searchIds($token));
     }
@@ -192,19 +192,19 @@ class PublisherTest extends TestCaseWithoutMiddleware
     {
         $nameToken = Str::random(12);
         $hostToken = Str::random(12);
-        $both = factory(Publisher::class)->create([
+        $both = Publisher::factory()->create([
             'name' => "name-{$nameToken}",
             'host' => "http://{$hostToken}.zanichelli",
         ]);
-        factory(Publisher::class)->create(['name' => "name-{$nameToken}"]);
-        factory(Publisher::class)->create(['host' => "http://{$hostToken}-other.zanichelli"]);
+        Publisher::factory()->create(['name' => "name-{$nameToken}"]);
+        Publisher::factory()->create(['host' => "http://{$hostToken}-other.zanichelli"]);
 
         $this->assertSame([$both->id], $this->searchIds("{$nameToken}  {$hostToken}"));
     }
 
     public function testSearchWithoutMatchReturnsEmptyList()
     {
-        factory(Publisher::class)->create();
+        Publisher::factory()->create();
 
         $this->assertSame([], $this->searchIds(Str::random(30)));
     }

@@ -35,8 +35,8 @@ class MessageTest extends TestCase
     {
         Queue::fake();
         $channel = Channel::factory()->create();
-        $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
-        factory(ChannelPublish::class)->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
+        $publisher = Publisher::factory()->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
+        ChannelPublish::factory()->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
         ChannelSubscribe::factory()->create(['channel_id' => $channel->id]);
         $request = [
             "channel" => $channel->name,
@@ -56,8 +56,8 @@ class MessageTest extends TestCase
     public function testSendMessageWithBasicAuth()
     {
         $channel = Channel::factory()->create();
-        $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
-        factory(ChannelPublish::class)->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
+        $publisher = Publisher::factory()->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
+        ChannelPublish::factory()->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
         ChannelSubscribe::factory()->create(['channel_id' => $channel->id, 'authentication' => 'BASIC']);
         $request = [
             "channel" => $channel->name,
@@ -83,8 +83,8 @@ class MessageTest extends TestCase
     public function testSendMessageWithoutAuth()
     {
         $channel = Channel::factory()->create();
-        $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
-        factory(ChannelPublish::class)->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
+        $publisher = Publisher::factory()->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
+        ChannelPublish::factory()->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
         ChannelSubscribe::factory()->create(['channel_id' => $channel->id, 'authentication' => 'NONE']);
         $request = [
             "channel" => $channel->name,
@@ -112,8 +112,8 @@ class MessageTest extends TestCase
     {
         Queue::fake();
         $channel = Channel::factory()->create();
-        $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
-        $channelPublish = factory(ChannelPublish::class)->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
+        $publisher = Publisher::factory()->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
+        $channelPublish = ChannelPublish::factory()->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
         $channelsubscribe = ChannelSubscribe::factory()->create(['channel_id' => $channel->id]);
         ChannelSubscribe::factory()->create(['channel_id' => $channel->id, 'subscriber_id' => $channelsubscribe->subscriber_id]);
         $request = [
@@ -134,7 +134,7 @@ class MessageTest extends TestCase
     public function testSendMessagePublisherNotHasChannel()
     {
         $channel = Channel::factory()->create();
-        $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
+        $publisher = Publisher::factory()->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
 
         $request = [
             "channel" => $channel->name,
@@ -184,7 +184,7 @@ class MessageTest extends TestCase
 
     public function testBasicAuthFailedAuth()
     {
-        $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
+        $publisher = Publisher::factory()->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
 
         $authorization = [
             'PHP_AUTH_USER' => $publisher->username,
@@ -200,8 +200,8 @@ class MessageTest extends TestCase
     public function testSendMessagePaused()
     {
         $channel = Channel::factory()->create();
-        $publisher = factory(Publisher::class)->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
-        factory(ChannelPublish::class)->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
+        $publisher = Publisher::factory()->create(['password' => bcrypt(self::PUBLISHER_PASSWORD)]);
+        ChannelPublish::factory()->create(['channel_id' => $channel->id, 'publisher_id' => $publisher->id]);
         $channelSubscribe = ChannelSubscribe::factory()->create(['channel_id' => $channel->id]);
         Cache::put(Config::get('cache.subscriber_paused_key_prefix') . $channelSubscribe->subscriber_id, true, 3600);
         $job = (new SendMessageJob(new SendMessageEvent(new Message("hello"), "http://prova.com", $channelSubscribe, "low", "test", "test")))->withFakeQueueInteractions();
