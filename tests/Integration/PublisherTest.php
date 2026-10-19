@@ -187,7 +187,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
         $this->assertSame([$match->id], $this->searchIds($token));
     }
 
-    public function testSearchMultipleWordsUsesAndSemantics()
+    public function testMultipleWordsSearch()
     {
         $nameToken = Str::random(12);
         $hostToken = Str::random(12);
