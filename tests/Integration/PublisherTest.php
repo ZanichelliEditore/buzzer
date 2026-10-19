@@ -23,7 +23,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testAdd()
     {
-        $newPublisher = factory(Publisher::class)->make();
+        $newPublisher = Publisher::factory()->make();
         $response = $this->json('POST', '/api/publishers/', $newPublisher->toArray());
         $response->assertStatus(201);
         unset($newPublisher->created_at);
@@ -34,7 +34,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testShow()
     {
-        $publisher = factory(Publisher::class)->create();
+        $publisher = Publisher::factory()->create();
         $response = $this->get('/api/publishers/' . $publisher->id);
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -128,7 +128,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $publisher = factory(Publisher::class)->create();
+        $publisher = Publisher::factory()->create();
         $response = $this->json('DELETE', '/api/publishers/' . $publisher->id);
         $response->assertStatus(200);
         $this->assertDatabaseMissing('publishers', [
@@ -138,7 +138,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testlist()
     {
-        factory(Publisher::class, 20)->create();
+        Publisher::factory()->count(20)->create();
 
         $count = count(Publisher::all());
         $response = $this->get('/api/publishers');
@@ -159,5 +159,52 @@ class PublisherTest extends TestCaseWithoutMiddleware
                 ],
             ])
             ->assertJsonCount($limit, 'data');
+    }
+
+    private function searchIds(string $q): array
+    {
+        $response = $this->get('/api/publishers?' . http_build_query(['q' => $q]));
+        $response->assertOk();
+
+        return collect($response->json('data'))->pluck('id')->all();
+    }
+
+    public function testSearchByNameWord()
+    {
+        $token = Str::random(12);
+        $match = Publisher::factory()->create(['name' => "alpha-{$token}"]);
+        Publisher::factory()->create(['name' => 'unrelated']);
+
+        $this->assertSame([$match->id], $this->searchIds($token));
+    }
+
+    public function testSearchByHostWord()
+    {
+        $token = Str::random(12);
+        $match = Publisher::factory()->create(['host' => "http://{$token}.zanichelli"]);
+        Publisher::factory()->create();
+
+        $this->assertSame([$match->id], $this->searchIds($token));
+    }
+
+    public function testMultipleWordsSearch()
+    {
+        $nameToken = Str::random(12);
+        $hostToken = Str::random(12);
+        $both = Publisher::factory()->create([
+            'name' => "name-{$nameToken}",
+            'host' => "http://{$hostToken}.zanichelli",
+        ]);
+        Publisher::factory()->create(['name' => "name-{$nameToken}"]);
+        Publisher::factory()->create(['host' => "http://{$hostToken}-other.zanichelli"]);
+
+        $this->assertSame([$both->id], $this->searchIds("{$nameToken}  {$hostToken}"));
+    }
+
+    public function testSearchWithoutMatchReturnsEmptyList()
+    {
+        Publisher::factory()->create();
+
+        $this->assertSame([], $this->searchIds(Str::random(30)));
     }
 }

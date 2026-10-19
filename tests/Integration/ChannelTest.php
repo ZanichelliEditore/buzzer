@@ -12,7 +12,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
 {
     public function testShowSubscribers()
     {
-        $channelSubscribe = factory(ChannelSubscribe::class)->create();
+        $channelSubscribe = ChannelSubscribe::factory()->create();
         $subscriber = Subscriber::find($channelSubscribe->subscriber_id);
         unset($subscriber['created_at']);
         unset($subscriber['updated_at']);
@@ -45,7 +45,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
 
     public function testShowPublishers()
     {
-        $channelPublish = factory(ChannelPublish::class)->create();
+        $channelPublish = ChannelPublish::factory()->create();
         $publisher = Publisher::find($channelPublish->publisher_id);
         $response = $this->json('GET', '/api/channels/' . $channelPublish->channel_id . '/publishers');
         $response->assertStatus(200);
