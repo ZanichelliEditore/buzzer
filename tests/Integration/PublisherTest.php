@@ -3,7 +3,6 @@
 namespace Tests\Integration;
 
 use App\Models\Publisher;
-use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Tests\TestCaseWithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -165,7 +164,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
     private function searchIds(string $q): array
     {
         $response = $this->get('/api/publishers?' . http_build_query(['q' => $q]));
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertOk();
 
         return collect($response->json('data'))->pluck('id')->all();
     }

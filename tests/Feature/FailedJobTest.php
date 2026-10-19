@@ -9,7 +9,6 @@ use App\Models\FailedJob;
 use App\Jobs\SendMessageJob;
 use App\Events\SendMessageEvent;
 use App\Models\ChannelSubscribe;
-use Illuminate\Http\Response;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -78,7 +77,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
         $this->app->instance('App\Http\Repositories\FailedJobRepository', $mock);
         $response = $this->json('GET', '/api/failedJobs');
 
-        $response->assertStatus(200)->assertJsonFragment($this->getJsonFragment($failedJob, $channelSubscribe));
+        $response->assertOk()
+            ->assertJsonFragment($this->getJsonFragment($failedJob, $channelSubscribe));
     }
 
     public function testListFailedJobInvalidData()
@@ -150,7 +150,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->get('/api/failedJobs/retry/5');
 
-        $response->assertStatus(Response::HTTP_OK)->assertExactJson(['message' => __('messages.RetrySuccess')]);
+        $response->assertOk()
+            ->assertExactJson(['message' => __('messages.RetrySuccess')]);
         $this->assertSuccessLogged([
             'action' => 'RETRY',
             'object_type' => 'failedJob',
@@ -166,7 +167,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->get('/api/failedJobs/retry/5');
 
-        $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR)->assertExactJson(['message' => __('messages.RetryError') . '5']);
+        $response->assertInternalServerError()
+            ->assertExactJson(['message' => __('messages.RetryError') . '5']);
     }
 
     public function testShouldReturn500WhenRetryThrows()
@@ -176,7 +178,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->get('/api/failedJobs/retry/5');
 
-        $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR)->assertExactJson(['message' => __('messages.RetryError') . '5']);
+        $response->assertInternalServerError()
+            ->assertExactJson(['message' => __('messages.RetryError') . '5']);
     }
 
     public function testShouldDeleteFailedJob()
@@ -187,7 +190,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->delete('/api/failedJobs/5');
 
-        $response->assertStatus(Response::HTTP_OK)->assertExactJson(['message' => __('messages.DeleteSuccess')]);
+        $response->assertOk()
+            ->assertExactJson(['message' => __('messages.DeleteSuccess')]);
         $this->assertSuccessLogged([
             'action' => 'DELETE',
             'object_type' => 'failedJob',
@@ -203,7 +207,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->delete('/api/failedJobs/5');
 
-        $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR)->assertExactJson(['message' => __('messages.DeleteError') . '5']);
+        $response->assertInternalServerError()
+            ->assertExactJson(['message' => __('messages.DeleteError') . '5']);
     }
 
     public function testShouldReturn500WhenDeleteThrows()
@@ -213,7 +218,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->delete('/api/failedJobs/5');
 
-        $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR)->assertExactJson(['message' => __('messages.DeleteError') . '5']);
+        $response->assertInternalServerError()
+            ->assertExactJson(['message' => __('messages.DeleteError') . '5']);
     }
 
     public function testShouldFlushAllFailedJobs()
@@ -222,7 +228,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->delete('/api/failedJobs/all');
 
-        $response->assertStatus(Response::HTTP_OK)->assertExactJson(['message' => __('messages.DeleteSuccess')]);
+        $response->assertOk()
+            ->assertExactJson(['message' => __('messages.DeleteSuccess')]);
     }
 
     public function testShouldReturn500WhenFlushExitsWithNonZeroCode()
@@ -231,7 +238,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->delete('/api/failedJobs/all');
 
-        $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR)->assertExactJson(['message' => __('messages.DeleteError')]);
+        $response->assertInternalServerError()
+            ->assertExactJson(['message' => __('messages.DeleteError')]);
     }
 
     public function testShouldRetryAllFailedJobs()
@@ -240,7 +248,8 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->get('/api/failedJobs/retry/all');
 
-        $response->assertStatus(Response::HTTP_OK)->assertExactJson(['message' => __('messages.RetrySuccess')]);
+        $response->assertOk()
+            ->assertExactJson(['message' => __('messages.RetrySuccess')]);
     }
 
     public function testShouldReturn500WhenRetryAllExitsWithNonZeroCode()
@@ -249,6 +258,7 @@ class FailedJobTest extends TestCaseWithoutMiddleware
 
         $response = $this->get('/api/failedJobs/retry/all');
 
-        $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR)->assertExactJson(['message' => __('messages.RetryError') . '1']);
+        $response->assertInternalServerError()
+            ->assertExactJson(['message' => __('messages.RetryError') . '1']);
     }
 }

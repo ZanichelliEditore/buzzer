@@ -6,7 +6,6 @@ use Mockery;
 use App\Models\Subscriber;
 use App\Http\Repositories\SubscriberRepository;
 use Tests\TestCaseWithoutMiddleware;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 
@@ -192,7 +191,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
         $response = $this->json('POST', '/api/subscribers/1/pause');
 
-        $response->assertStatus(Response::HTTP_NO_CONTENT);
+        $response->assertNoContent();
 
         Cache::shouldHaveReceived('put')->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, config('cache.subscriber_paused_ttl'));
     }
@@ -208,7 +207,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->getMock();
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
         $response = $this->json('POST', '/api/subscribers/1/pause');
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertNotFound();
     }
 
     public function testRestore()
@@ -226,7 +225,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->getMock();
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
         $response = $this->json('POST', '/api/subscribers/1/restore');
-        $response->assertStatus(Response::HTTP_NO_CONTENT);
+        $response->assertNoContent();
         Cache::shouldHaveReceived('forget')->with(Config::get('cache.subscriber_paused_key_prefix') . 1);
     }
 
@@ -241,6 +240,6 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->getMock();
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
         $response = $this->json('POST', '/api/subscribers/1/restore');
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertNotFound();
     }
 }
