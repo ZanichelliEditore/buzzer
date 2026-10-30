@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Repositories;
 
 use App\Models\FailedJob;
@@ -7,24 +8,24 @@ class FailedJobRepository
 {
 
     /**
-    * Find all the failed jobs
-    *
-    * @param  String  $query
-    * @param  String  $orderBy
-    * @param  String  $order
-    * @param  int  $limit
-    * @return App\Models\FailedJob
-    *
-    */
+     * Find all the failed jobs
+     *
+     * @param  String  $query
+     * @param  String  $orderBy
+     * @param  String  $order
+     * @param  int  $limit
+     * @return App\Models\FailedJob
+     *
+     */
     public function all($query, $orderBy, $order, $limit)
     {
         if (!$query) {
             return FailedJob::orderBy($orderBy, $order)
-            ->paginate($limit);
+                ->paginate($limit);
         }
-        return FailedJob::where('payload', 'LIKE', '%' . $query . '%' )
-                    ->orderBy($orderBy, $order)
-                    ->paginate($limit);
+        return FailedJob::where('payload', 'LIKE', '%' . $query . '%')
+            ->orderBy($orderBy, $order)
+            ->paginate($limit);
     }
     /**
      * Find a failed job by id
@@ -59,5 +60,16 @@ class FailedJobRepository
     public function count()
     {
         return FailedJob::count();
+    }
+
+    /**
+     * Lazily iterate over the id and payload of all the failed jobs
+     *
+     * @return \Illuminate\Support\LazyCollection
+     *
+     */
+    public function cursor()
+    {
+        return FailedJob::select(['id', 'payload'])->cursor();
     }
 }
