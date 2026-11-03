@@ -1,20 +1,33 @@
 <?php
 
-/* @var $factory \Illuminate\Database\Eloquent\Factory */
+namespace Database\Factories;
 
-use App\Models\Channel;
-use App\Models\Subscriber;
-use Faker\Generator as Faker;
-use App\Models\ChannelSubscribe;
 use App\Constants\Authentication;
+use App\Models\Channel;
+use App\Models\ChannelSubscribe;
+use App\Models\Subscriber;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-$factory->define(ChannelSubscribe::class, function (Faker $faker) {
-    return [
-        'subscriber_id' => factory(Subscriber::class)->create()->id,
-        'channel_id' => factory(Channel::class)->create()->id,
-        'endpoint' => Str::random(10),
-        'authentication' => $faker->randomElement([Authentication::BASIC, Authentication::OAUTH2, Authentication::NONE]),
-        'username' => 'test',
-        'password' => 'test'
-    ];
-});
+/**
+ * @extends Factory<ChannelSubscribe>
+ */
+class ChannelSubscribeFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'subscriber_id' => Subscriber::factory(),
+            'channel_id' => Channel::factory(),
+            'endpoint' => Str::random(10),
+            'authentication' => $this->faker->randomElement([Authentication::BASIC, Authentication::OAUTH2, Authentication::NONE]),
+            'username' => 'test',
+            'password' => 'test',
+        ];
+    }
+}

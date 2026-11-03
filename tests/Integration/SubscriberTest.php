@@ -88,7 +88,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testList()
     {
-        factory(Subscriber::class, 20)->create();
+        Subscriber::factory()->count(20)->create();
 
         $count = count(Subscriber::all());
         $response = $this->get('/api/subscribers');
@@ -113,7 +113,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testShow()
     {
-        $subscriber = factory(Subscriber::class)->create();
+        $subscriber = Subscriber::factory()->create();
         $response = $this->get('/api/subscribers/' . $subscriber->id);
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -135,7 +135,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $subscriber = factory(Subscriber::class)->create();
+        $subscriber = Subscriber::factory()->create();
         $response = $this->json('DELETE', '/api/subscribers/' . $subscriber->id);
         $response->assertStatus(200);
         $this->assertDatabaseMissing('subscribers', [
@@ -155,7 +155,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
     #[DataProvider('getHost')]
     public function addTest($host, $expectedHost)
     {
-        $newSubscriber = factory(Subscriber::class)->make(['host' => $host]);
+        $newSubscriber = Subscriber::factory()->make(['host' => $host]);
         $response = $this->json('POST', '/api/subscribers/', $newSubscriber->toArray());
 
         $response->assertStatus(201);

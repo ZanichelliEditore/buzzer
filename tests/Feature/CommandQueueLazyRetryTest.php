@@ -19,7 +19,7 @@ class CommandQueueLazyRetryTest extends TestCaseWithoutMiddleware
         Queue::fake();
         $failedJobsCollection = new Collection();
         for ($i = 0; $i < $failedJobsCount; $i++) {
-            $failedJobsCollection->push(factory(FailedJob::class)->make());
+            $failedJobsCollection->push(FailedJob::factory()->make());
         }
 
         $this->app->instance(

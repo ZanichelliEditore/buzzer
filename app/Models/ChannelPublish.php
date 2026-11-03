@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ChannelPublish extends Model
 {
+    use HasFactory;
+
     protected $table = 'channel_publish';
 
     protected $fillable = ['publisher_id', 'channel_id'];
