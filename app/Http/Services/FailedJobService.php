@@ -37,6 +37,9 @@ class FailedJobService
             } catch (ModelNotFoundException) {
                 Log::warning('[FAILED JOB SERVICE] Model not found for failed job ' . $failedJob->id);
                 continue;
+            } catch (\Throwable) {
+                Log::error('[FAILED JOB SERVICE] error' . $failedJob->id);
+                continue;
             }
 
             $recipient = $email ?: config('mail.email_to');
