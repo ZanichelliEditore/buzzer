@@ -44,11 +44,11 @@ class FailedJobServiceTest extends TestCaseWithoutMiddleware
 
     public function testFailedJobsBySubscriberCountsPerChannel()
     {
-        $channelA = factory(Channel::class)->create();
-        $channelB = factory(Channel::class)->create();
-        $subscriber = factory(Subscriber::class)->create(['email' => 'sub@zanichelli.it']);
-        $subscribeA = factory(ChannelSubscribe::class)->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channelA->id]);
-        $subscribeB = factory(ChannelSubscribe::class)->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channelB->id]);
+        $channelA = Channel::factory()->create();
+        $channelB = Channel::factory()->create();
+        $subscriber = Subscriber::factory()->create(['email' => 'sub@zanichelli.it']);
+        $subscribeA = ChannelSubscribe::factory()->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channelA->id]);
+        $subscribeB = ChannelSubscribe::factory()->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channelB->id]);
 
         $this->createFailedJob($subscribeA, $channelA, $subscriber);
         $this->createFailedJob($subscribeA, $channelA, $subscriber);
@@ -64,9 +64,9 @@ class FailedJobServiceTest extends TestCaseWithoutMiddleware
 
     public function testFailedJobsBySubscriberGroupsSubscribersWithoutEmailUnderDefaultRecipients()
     {
-        $channel = factory(Channel::class)->create();
-        $subscriber = factory(Subscriber::class)->create(['email' => null]);
-        $subscribe = factory(ChannelSubscribe::class)->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channel->id]);
+        $channel = Channel::factory()->create();
+        $subscriber = Subscriber::factory()->create(['email' => null]);
+        $subscribe = ChannelSubscribe::factory()->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channel->id]);
 
         $this->createFailedJob($subscribe, $channel, $subscriber);
 
@@ -91,9 +91,9 @@ class FailedJobServiceTest extends TestCaseWithoutMiddleware
 
     public function testFailedJobsBySubscriberSkipsJobWhenChannelSubscribeNoLongerExists()
     {
-        $channel = factory(Channel::class)->create();
-        $subscriber = factory(Subscriber::class)->create(['email' => 'sub@zanichelli.it']);
-        $subscribe = factory(ChannelSubscribe::class)->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channel->id]);
+        $channel = Channel::factory()->create();
+        $subscriber = Subscriber::factory()->create(['email' => 'sub@zanichelli.it']);
+        $subscribe = ChannelSubscribe::factory()->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channel->id]);
 
         $this->createFailedJob($subscribe, $channel, $subscriber);
         // The serialized job references a model that is gone: unserialize throws ModelNotFoundException
