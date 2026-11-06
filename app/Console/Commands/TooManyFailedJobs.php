@@ -52,7 +52,7 @@ class TooManyFailedJobs extends Command
         }
 
         foreach ($this->failedJobService->failedJobsBySubscriber() as $email => $channels) {
-            $this->mailer->dispatchEmail(view('email')->with(['channels' => $channels])->render(), explode(',', $email));
+            $this->mailer->dispatchEmail(view('email')->with(['channels' => $channels])->render(), [$email]);
         }
 
         return 0;

@@ -39,7 +39,7 @@ class FailedJobService
                 continue;
             }
 
-            $recipient = $email ?: env('EMAIL_TO');
+            $recipient = $email ?: config('mail.email_to');
             $counts[$recipient][$event->channelName] = ($counts[$recipient][$event->channelName] ?? 0) + 1;
         }
 

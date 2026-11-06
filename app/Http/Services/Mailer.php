@@ -19,7 +19,7 @@ class Mailer
             'Authorization' => 'Bearer ' . $this->retrieveToken()
         ])
             ->post(env('URL_SENDY') . 'api/v1/emails', [
-                'to' => $to ? $to : explode(",", env('EMAIL_TO')),
+                'to' => $to ? $to : explode(",", config('mail.email_to')),
                 'from' => env('EMAIL_FROM'),
                 'subject' => 'Alert from BUZZER',
                 'body' => $body

@@ -133,4 +133,15 @@ return [
 
     'log_channel' => env('MAIL_LOG_CHANNEL'),
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Alert Recipient
+    |--------------------------------------------------------------------------
+    |
+    | Recipient of the alert emails, used when no specific recipient is given.
+    |
+    */
+
+    'email_to' => env('EMAIL_TO'),
 ];
