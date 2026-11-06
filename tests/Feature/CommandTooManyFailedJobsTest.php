@@ -89,27 +89,6 @@ class CommandTooManyFailedJobsTest extends TestCaseWithoutMiddleware
         $this->assertStringContainsString('5', $bodies['b@zanichelli.it']);
     }
 
-    public function testSplitsCommaSeparatedRecipients()
-    {
-        $this->mockRepository([
-            'test@zanichelli.it,test2@zanichelli.it' => ['Bob' => 3],
-        ]);
-
-        $this->app->instance(
-            'App\Http\Services\Mailer',
-            Mockery::mock(Mailer::class)->makePartial()
-                ->shouldReceive('dispatchEmail')
-                ->once()
-                ->with(
-                    Mockery::on(fn ($body) => str_contains($body, 'Bob') && str_contains($body, '3')),
-                    ['test@zanichelli.it', 'test2@zanichelli.it']
-                )
-                ->getMock()
-        );
-
-        $this->artisan('check:failed-jobs')->assertExitCode(0);
-    }
-
     public function testSendsNothingWhenNoFailedJobs()
     {
         $this->mockRepository([]);

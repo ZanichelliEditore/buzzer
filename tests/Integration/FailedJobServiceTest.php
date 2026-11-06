@@ -88,4 +88,30 @@ class FailedJobServiceTest extends TestCaseWithoutMiddleware
 
         $this->assertSame([], $this->service->failedJobsBySubscriber());
     }
+
+    public function testFailedJobsBySubscriberSkipsJobWhenChannelSubscribeNoLongerExists()
+    {
+        $channel = factory(Channel::class)->create();
+        $subscriber = factory(Subscriber::class)->create(['email' => 'sub@zanichelli.it']);
+        $subscribe = factory(ChannelSubscribe::class)->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channel->id]);
+
+        $this->createFailedJob($subscribe, $channel, $subscriber);
+        // The serialized job references a model that is gone: unserialize throws ModelNotFoundException
+        ChannelSubscribe::query()->whereKey($subscribe->id)->delete();
+
+        $this->assertSame([], $this->service->failedJobsBySubscriber());
+    }
+
+    public function testFailedJobsBySubscriberSkipsJobWhenCommandIsNotUnserializable()
+    {
+        FailedJob::insert([
+            'connection' => 'redis',
+            'queue' => 'default',
+            'payload' => json_encode(['data' => ['command' => 'not-a-serialized-job']]),
+            'exception' => 'error',
+            'failed_at' => now(),
+        ]);
+
+        $this->assertSame([], $this->service->failedJobsBySubscriber());
+    }
 }

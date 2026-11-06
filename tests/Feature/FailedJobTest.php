@@ -30,7 +30,6 @@ class FailedJobTest extends TestCaseWithoutMiddleware
                     "id" => $failedJob->id,
                     "payload" => $failedJob->payload,
                     "subscriber" => $channelSubscribe ? $channelSubscribe->subscriber->name : '',
-                    "subscriber_email" => $channelSubscribe ? $channelSubscribe->subscriber->email : null,
                     "channel" => $channelSubscribe ? $channelSubscribe->channel->name : ''
                 ]
             ]

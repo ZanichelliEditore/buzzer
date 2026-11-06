@@ -24,6 +24,7 @@ class FailedJobService
     public function failedJobsBySubscriber()
     {
         $counts = [];
+        $subscribers = [];
 
         foreach ($this->failedJobRepository->cursor() as $failedJob) {
             $payload = json_decode($failedJob->payload);
@@ -33,7 +34,14 @@ class FailedJobService
 
             try {
                 $event = unserialize($payload->data->command)->getEvent();
-                $email = $event->channelSubscribe->subscriber->email;
+                $channelSubscribe = $event->channelSubscribe;
+
+                if (array_key_exists($channelSubscribe["subscriber_id"], $subscribers)) {
+                    $email = $subscribers[$channelSubscribe["subscriber_id"]];
+                } else {
+                    $email = $channelSubscribe->subscriber->email;
+                    $subscribers[$channelSubscribe["subscriber_id"]] = $email;
+                }
             } catch (ModelNotFoundException) {
                 Log::warning('[FAILED JOB SERVICE] Model not found for failed job ' . $failedJob->id);
                 continue;
