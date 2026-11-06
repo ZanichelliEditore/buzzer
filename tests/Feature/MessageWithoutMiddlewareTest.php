@@ -101,8 +101,8 @@ class MessageWithoutMiddlewareTest extends TestCaseWithoutMiddleware
     public function testSendMessage()
     {
         Queue::fake();
-        $channel = factory(Channel::class)->create();
-        factory(ChannelSubscribe::class)->create(['channel_id' => $channel->id]);
+        $channel = Channel::factory()->create();
+        ChannelSubscribe::factory()->create(['channel_id' => $channel->id]);
         $request = [
             "channel" => $channel->name,
             "message" => "test"
@@ -126,9 +126,9 @@ class MessageWithoutMiddlewareTest extends TestCaseWithoutMiddleware
     public function testDoubleSubscription()
     {
         Queue::fake();
-        $channel = factory(Channel::class)->create();
-        $channelsubscribe = factory(ChannelSubscribe::class)->create(['channel_id' => $channel->id]);
-        factory(ChannelSubscribe::class)->create(['channel_id' => $channel->id, 'subscriber_id' => $channelsubscribe->subscriber_id]);
+        $channel = Channel::factory()->create();
+        $channelsubscribe = ChannelSubscribe::factory()->create(['channel_id' => $channel->id]);
+        ChannelSubscribe::factory()->create(['channel_id' => $channel->id, 'subscriber_id' => $channelsubscribe->subscriber_id]);
         $request = [
             "channel" => $channel->name,
             "message" => "test"
@@ -150,8 +150,8 @@ class MessageWithoutMiddlewareTest extends TestCaseWithoutMiddleware
 
     public function testSendMessageWithOAuth2()
     {
-        $channel = factory(Channel::class)->create();
-        factory(ChannelSubscribe::class)->create(['channel_id' => $channel->id, 'authentication' => 'OAUTH2']);
+        $channel = Channel::factory()->create();
+        ChannelSubscribe::factory()->create(['channel_id' => $channel->id, 'authentication' => 'OAUTH2']);
         $request = [
             "channel" => $channel->name,
             "message" => "test"

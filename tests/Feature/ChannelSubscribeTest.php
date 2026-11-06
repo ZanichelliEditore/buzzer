@@ -26,7 +26,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 
     public function testFailSave()
     {
-        $channelSubscribe = factory(ChannelSubscribe::class)->make();
+        $channelSubscribe = ChannelSubscribe::factory()->make();
         $request = [
             'channel_id' => $channelSubscribe->channel_id,
             'endpoint' => $channelSubscribe->endpoint,
@@ -55,7 +55,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 
     public function testFailCreateNotFound()
     {
-        $channelSubscribe = factory(ChannelSubscribe::class)->make();
+        $channelSubscribe = ChannelSubscribe::factory()->make();
         $request = [
             'channel_id' => $channelSubscribe->channel_id,
             'endpoint' => $channelSubscribe->endpoint,
@@ -77,7 +77,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 
     public function testDuplicateSubscribet()
     {
-        $channelSubscribe = factory(ChannelSubscribe::class)->make();
+        $channelSubscribe = ChannelSubscribe::factory()->make();
         $request = [
             'channel_id' => $channelSubscribe->channel_id,
             'endpoint' => $channelSubscribe->endpoint,
@@ -102,7 +102,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 
     public function testShowNoSubscriptions()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 'find' => $subscriber
@@ -144,7 +144,7 @@ class ChannelSubscribeTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $channelSubscribe = factory(ChannelSubscribe::class)->make();
+        $channelSubscribe = ChannelSubscribe::factory()->make();
         $mock = Mockery::mock(ChannelSubscribeRepository::class)->makePartial()
             ->shouldReceive([
                 'find' => $channelSubscribe,

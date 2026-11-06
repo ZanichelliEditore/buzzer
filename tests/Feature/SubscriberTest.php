@@ -6,7 +6,6 @@ use Mockery;
 use App\Models\Subscriber;
 use App\Http\Repositories\SubscriberRepository;
 use Tests\TestCaseWithoutMiddleware;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 
@@ -39,7 +38,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testList()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $subscriber->id = 1;
         $subscriber->created_at = '2019-09-09 12:37:55';
         $subscriber->updated_at = '2019-09-09 12:37:55';
@@ -78,7 +77,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testShow()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 'find' => $subscriber
@@ -110,7 +109,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testFailSave()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $request = [
             'name' => $subscriber->name,
             'host' => $subscriber->host
@@ -142,7 +141,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testFailDestroy()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
                 'find' => $subscriber,
@@ -158,7 +157,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
             ->shouldReceive([
 
@@ -176,7 +175,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
     public function testPause()
     {
         Cache::spy();
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $subscriber->id = 1;
         Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
         Config::set('cache.subscriber_paused_ttl', 3600);
@@ -192,7 +191,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
 
         $response = $this->json('POST', '/api/subscribers/1/pause');
 
-        $response->assertStatus(Response::HTTP_NO_CONTENT);
+        $response->assertNoContent();
 
         Cache::shouldHaveReceived('put')->with(Config::get('cache.subscriber_paused_key_prefix') . 1, true, config('cache.subscriber_paused_ttl'));
     }
@@ -208,13 +207,13 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->getMock();
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
         $response = $this->json('POST', '/api/subscribers/1/pause');
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertNotFound();
     }
 
     public function testRestore()
     {
         Cache::spy();
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $subscriber->id = 1;
         Config::set('cache.subscriber_paused_key_prefix', 'subscriber_paused');
         $mock = Mockery::mock(SubscriberRepository::class)->makePartial()
@@ -226,7 +225,7 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->getMock();
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
         $response = $this->json('POST', '/api/subscribers/1/restore');
-        $response->assertStatus(Response::HTTP_NO_CONTENT);
+        $response->assertNoContent();
         Cache::shouldHaveReceived('forget')->with(Config::get('cache.subscriber_paused_key_prefix') . 1);
     }
 
@@ -241,6 +240,6 @@ class SubscriberTest extends TestCaseWithoutMiddleware
             ->getMock();
         $this->app->instance('App\Http\Repositories\SubscriberRepository', $mock);
         $response = $this->json('POST', '/api/subscribers/1/restore');
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertNotFound();
     }
 }
