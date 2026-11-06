@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b23c44a8fa6926dd3edcf9399814d0e",
+    "content-hash": "36026403ac36c6f6ebb7588b9ff37e79",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7696,16 +7696,16 @@
         },
         {
             "name": "zanichelli/idp-extensions",
-            "version": "v3.8.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZanichelliEditore/idp-extension.git",
-                "reference": "691129b90419e43c6f78664bb1a3ddfcd980eaeb"
+                "reference": "0cb8125"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZanichelliEditore/idp-extension/zipball/691129b90419e43c6f78664bb1a3ddfcd980eaeb",
-                "reference": "691129b90419e43c6f78664bb1a3ddfcd980eaeb",
+                "url": "https://api.github.com/repos/ZanichelliEditore/idp-extension/zipball/0cb8125",
+                "reference": "0cb8125",
                 "shasum": ""
             },
             "require": {
@@ -7715,8 +7715,10 @@
             },
             "require-dev": {
                 "mockery/mockery": "^1.0",
-                "orchestra/testbench": "^3.8"
+                "orchestra/testbench": "^6|^7|^8|^9|^10|^11",
+                "phpunit/phpunit": "^9|^10|^11|^12"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7743,9 +7745,10 @@
             "description": "Classes to interact with the Zanichelli identity provider",
             "support": {
                 "issues": "https://github.com/ZanichelliEditore/idp-extension/issues",
-                "source": "https://github.com/ZanichelliEditore/idp-extension/tree/v3.8.3"
+                "source": "https://github.com/ZanichelliEditore/idp-extension/tree/master"
             },
-            "time": "2026-08-24T12:20:52+00:00"
+            "time": "2026-10-12T14:29:46+00:00",
+            "published-time": "2026-10-12T14:29:52+00:00"
         }
     ],
     "packages-dev": [
@@ -9680,12 +9683,14 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "zanichelli/idp-extensions": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }
