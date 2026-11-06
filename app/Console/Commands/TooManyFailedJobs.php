@@ -47,7 +47,12 @@ class TooManyFailedJobs extends Command
      */
     public function handle()
     {
-        if ($this->failedJobRepository->count() < 100) {
+        $count = $this->failedJobRepository->count();
+        if ($count < 100) {
+            return 0;
+        }
+        if ($count > 10000) {
+            $this->mailer->dispatchEmail(view('email')->with(['alertCount' => $count])->render(), [config('mail.email_to')]);
             return 0;
         }
 
