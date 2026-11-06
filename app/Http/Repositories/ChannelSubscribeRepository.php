@@ -59,7 +59,7 @@ class ChannelSubscribeRepository implements RepositoryInterface
     {
         $password = null;
         if (isset($channelSubscribe->password) && $channelSubscribe->authentication == 'OAUTH2') {
-            $password = openssl_encrypt($channelSubscribe->password, 'AES256', env('APP_KEY'), $options = 0, env('CRYPT_KEY'));
+            $password = openssl_encrypt($channelSubscribe->password, 'AES256', config('app.key'), $options = 0, config('app.crypt_key'));
         } else if (isset($channelSubscribe->password) && $channelSubscribe->authentication == 'BASIC') {
             $password = encrypt($channelSubscribe->password);
         }

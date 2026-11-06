@@ -100,13 +100,24 @@
   command: "/usr/local/bin/docker-compose -f {{ deploy_path }}/docker-compose.prod.yml run --rm nodejs npm run build"
 
 - name: Run composer install
-  command: "docker exec buzzer_app composer install"
+  command: "docker exec buzzer_app composer install --no-dev --optimize-autoloader --no-interaction"
 
 - name: Run migrations
   command: "docker exec buzzer_app php artisan migrate --force"
 
 - name: Publish telescope
   command: "docker exec buzzer_app php artisan telescope:publish"
+
+- name: Clear laravel cached files
+  command: "docker exec buzzer_app php artisan optimize:clear"
+
+- name: Cache laravel config, events, routes and views
+  command: "docker exec buzzer_app php artisan optimize"
+
+# opcache.validate_timestamps=0: restart php-fpm and queue workers to reset OPcache
+# after composer install and laravel cache generation
+- name: Restart app container
+  command: "docker restart buzzer_app"
 
 - name: Create crontab job to run laravel scheduler
   ansible.builtin.cron:

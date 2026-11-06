@@ -70,7 +70,7 @@ class GuzzleService
      */
     public function sendWithOAuth2(SendMessageEvent $event)
     {
-        $password = openssl_decrypt($event->channelSubscribe->password, 'AES256', env('APP_KEY'), $options = 0, env('CRYPT_KEY'));
+        $password = openssl_decrypt($event->channelSubscribe->password, 'AES256', config('app.key'), $options = 0, config('app.crypt_key'));
         $token = $this->retrieveToken($event->host, $event->channelSubscribe->username, $password);
 
         $this->client->post(
