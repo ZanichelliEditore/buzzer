@@ -17,6 +17,8 @@ class SendMessageJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public const RECIPIENT_PAYLOAD_KEY = 'recipient';
+
     private $event;
     private $body;
     private $startTime;

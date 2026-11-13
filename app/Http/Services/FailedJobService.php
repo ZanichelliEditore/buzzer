@@ -2,9 +2,9 @@
 
 namespace App\Http\Services;
 
-use Illuminate\Support\Facades\Log;
+use App\Jobs\SendMessageJob;
+use App\Models\Subscriber;
 use App\Http\Repositories\FailedJobRepository;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class FailedJobService
 {
@@ -16,42 +16,35 @@ class FailedJobService
     }
 
     /**
-     * Count the failed jobs per subscriber email and channel, reading the failed jobs payload.
-     * Failed jobs of subscribers without email are grouped under the DEVELOPER key.
+     * Count the failed jobs per subscriber email and channel, reading the recipient added to the job payload.
+     * Failed jobs of subscribers without email (or no longer existing) are grouped under the default email.
      *
      * @return array<string, array<string, int>> [email => [channel name => failed jobs count]]
      */
     public function failedJobsBySubscriber()
     {
-        $counts = [];
-        $subscribers = [];
+        $countsBySubscriber = [];
 
         foreach ($this->failedJobRepository->cursor() as $failedJob) {
-            $payload = json_decode($failedJob->payload);
-            if (!isset($payload->data->command)) {
+            $recipient = json_decode($failedJob->payload)->{SendMessageJob::RECIPIENT_PAYLOAD_KEY} ?? null;
+            if (!isset($recipient->subscriber_id, $recipient->channel_name)) {
                 continue;
             }
 
-            try {
-                $event = unserialize($payload->data->command)->getEvent();
-                $channelSubscribe = $event->channelSubscribe;
+            $countsBySubscriber[$recipient->subscriber_id][$recipient->channel_name] =
+                ($countsBySubscriber[$recipient->subscriber_id][$recipient->channel_name] ?? 0) + 1;
+        }
 
-                if (array_key_exists($channelSubscribe["subscriber_id"], $subscribers)) {
-                    $email = $subscribers[$channelSubscribe["subscriber_id"]];
-                } else {
-                    $email = $channelSubscribe->subscriber->email;
-                    $subscribers[$channelSubscribe["subscriber_id"]] = $email;
-                }
-            } catch (ModelNotFoundException) {
-                Log::warning('[FAILED JOB SERVICE] Model not found for failed job ' . $failedJob->id);
-                continue;
-            } catch (\Throwable) {
-                Log::error('[FAILED JOB SERVICE] error' . $failedJob->id);
-                continue;
+        if (!$countsBySubscriber) return [];
+
+        $emails = Subscriber::whereIn('id', array_keys($countsBySubscriber))->pluck('email', 'id');
+
+        $counts = [];
+        foreach ($countsBySubscriber as $subscriberId => $channels) {
+            $email = !empty($emails[$subscriberId]) ? $emails[$subscriberId] : config('mail.email_to');
+            foreach ($channels as $channelName => $count) {
+                $counts[$email][$channelName] = ($counts[$email][$channelName] ?? 0) + $count;
             }
-
-            $recipient = $email ?: config('mail.email_to');
-            $counts[$recipient][$event->channelName] = ($counts[$recipient][$event->channelName] ?? 0) + 1;
         }
 
         return $counts;

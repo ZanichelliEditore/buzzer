@@ -2,14 +2,9 @@
 
 namespace Tests\Integration;
 
-use App\Events\SendMessageEvent;
 use App\Http\Repositories\FailedJobRepository;
 use App\Http\Services\FailedJobService;
-use App\Jobs\SendMessageJob;
-use App\Models\Channel;
-use App\Models\ChannelSubscribe;
 use App\Models\FailedJob;
-use App\Models\Message;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCaseWithoutMiddleware;
@@ -23,20 +18,25 @@ class FailedJobServiceTest extends TestCaseWithoutMiddleware
     protected function setUp(): void
     {
         parent::setUp();
-        // Inside the test transaction: rolled back, local failed jobs are preserved
+
         FailedJob::query()->delete();
         $this->service = new FailedJobService(new FailedJobRepository());
     }
 
-    private function createFailedJob(ChannelSubscribe $channelSubscribe, Channel $channel, Subscriber $subscriber): void
+    private function createFailedJob(int $subscriberId, string $channelName): void
     {
-        $event = new SendMessageEvent(new Message('body'), $subscriber->host, $channelSubscribe, 1, $channel->name, $subscriber->name);
-        $payload = json_encode(['data' => ['command' => serialize(new SendMessageJob($event))]]);
+        $this->insertFailedJob([
+            'data' => ['command' => 'not-a-serialized-job'],
+            'recipient' => ['subscriber_id' => $subscriberId, 'channel_name' => $channelName],
+        ]);
+    }
 
+    private function insertFailedJob(array $payload): void
+    {
         FailedJob::insert([
             'connection' => 'redis',
             'queue' => 'default',
-            'payload' => $payload,
+            'payload' => json_encode($payload),
             'exception' => 'error',
             'failed_at' => now(),
         ]);
@@ -44,74 +44,45 @@ class FailedJobServiceTest extends TestCaseWithoutMiddleware
 
     public function testFailedJobsBySubscriberCountsPerChannel()
     {
-        $channelA = Channel::factory()->create();
-        $channelB = Channel::factory()->create();
         $subscriber = Subscriber::factory()->create(['email' => 'sub@zanichelli.it']);
-        $subscribeA = ChannelSubscribe::factory()->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channelA->id]);
-        $subscribeB = ChannelSubscribe::factory()->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channelB->id]);
 
-        $this->createFailedJob($subscribeA, $channelA, $subscriber);
-        $this->createFailedJob($subscribeA, $channelA, $subscriber);
-        $this->createFailedJob($subscribeB, $channelB, $subscriber);
-
-        $result = $this->service->failedJobsBySubscriber();
+        $this->createFailedJob($subscriber->id, 'channelA');
+        $this->createFailedJob($subscriber->id, 'channelA');
+        $this->createFailedJob($subscriber->id, 'channelB');
 
         $this->assertSame(
-            [$channelA->name => 2, $channelB->name => 1],
-            $result['sub@zanichelli.it']
+            ['channelA' => 2, 'channelB' => 1],
+            $this->service->failedJobsBySubscriber()['sub@zanichelli.it']
+        );
+    }
+
+    public function testFailedJobsBySubscriberGroupsDifferentSubscribersByEmail()
+    {
+        $first = Subscriber::factory()->create(['email' => 'first@zanichelli.it']);
+        $second = Subscriber::factory()->create(['email' => 'second@zanichelli.it']);
+
+        $this->createFailedJob($first->id, 'channelA');
+        $this->createFailedJob($second->id, 'channelA');
+        $this->createFailedJob($second->id, 'channelA');
+
+        $this->assertSame(
+            [
+                'first@zanichelli.it' => ['channelA' => 1],
+                'second@zanichelli.it' => ['channelA' => 2],
+            ],
+            $this->service->failedJobsBySubscriber()
         );
     }
 
     public function testFailedJobsBySubscriberGroupsSubscribersWithoutEmailUnderDefaultRecipients()
     {
-        $channel = Channel::factory()->create();
         $subscriber = Subscriber::factory()->create(['email' => null]);
-        $subscribe = ChannelSubscribe::factory()->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channel->id]);
 
-        $this->createFailedJob($subscribe, $channel, $subscriber);
+        $this->createFailedJob($subscriber->id, 'channelA');
 
         $this->assertSame(
-            [env('EMAIL_TO') => [$channel->name => 1]],
+            [config('mail.email_to') => ['channelA' => 1]],
             $this->service->failedJobsBySubscriber()
         );
-    }
-
-    public function testFailedJobsBySubscriberSkipsJobsWithoutCommand()
-    {
-        FailedJob::insert([
-            'connection' => 'redis',
-            'queue' => 'default',
-            'payload' => json_encode(['data' => []]),
-            'exception' => 'error',
-            'failed_at' => now(),
-        ]);
-
-        $this->assertSame([], $this->service->failedJobsBySubscriber());
-    }
-
-    public function testFailedJobsBySubscriberSkipsJobWhenChannelSubscribeNoLongerExists()
-    {
-        $channel = Channel::factory()->create();
-        $subscriber = Subscriber::factory()->create(['email' => 'sub@zanichelli.it']);
-        $subscribe = ChannelSubscribe::factory()->create(['subscriber_id' => $subscriber->id, 'channel_id' => $channel->id]);
-
-        $this->createFailedJob($subscribe, $channel, $subscriber);
-        // The serialized job references a model that is gone: unserialize throws ModelNotFoundException
-        ChannelSubscribe::query()->whereKey($subscribe->id)->delete();
-
-        $this->assertSame([], $this->service->failedJobsBySubscriber());
-    }
-
-    public function testFailedJobsBySubscriberSkipsJobWhenCommandIsNotUnserializable()
-    {
-        FailedJob::insert([
-            'connection' => 'redis',
-            'queue' => 'default',
-            'payload' => json_encode(['data' => ['command' => 'not-a-serialized-job']]),
-            'exception' => 'error',
-            'failed_at' => now(),
-        ]);
-
-        $this->assertSame([], $this->service->failedJobsBySubscriber());
     }
 }

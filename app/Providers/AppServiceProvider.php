@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Jobs\SendMessageJob;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 use App\Http\Controllers\ChannelController;
 use App\Http\Repositories\ChannelRepository;
@@ -28,6 +30,21 @@ class AppServiceProvider extends ServiceProvider
     {
         Passport::$clientUuids = false;
         Passport::$validateKeyPermissions = false;
+
+        Queue::createPayloadUsing(function ($connection, $queue, $payload) {
+            $job = $payload['data']['command'] ?? null;
+
+            if (!$job instanceof SendMessageJob) return [];
+
+            $event = $job->getEvent();
+
+            return [
+                SendMessageJob::RECIPIENT_PAYLOAD_KEY => [
+                    'subscriber_id' => $event->channelSubscribe->subscriber_id,
+                    'channel_name' => $event->channelName,
+                ],
+            ];
+        });
     }
 
     /**
