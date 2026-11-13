@@ -35,7 +35,7 @@ class ServiceEmailTest extends TestCaseWithoutMiddleware
         $this->assertEquals($response, $token);
         Http::assertSentCount(1);
         Http::assertSent(function (Request $request) {
-            return str_contains($request->url(), env('URL_SENDY') . 'oauth/token');
+            return str_contains($request->url(), config('services.sendy.url') . 'oauth/token');
         });
     }
 
@@ -64,7 +64,7 @@ class ServiceEmailTest extends TestCaseWithoutMiddleware
         Http::assertSentCount(2);
 
         Http::assertSent(function (Request $request) use ($body) {
-            return $request->url() == env('URL_SENDY') . 'api/v1/emails' &&
+            return $request->url() == config('services.sendy.url') . 'api/v1/emails' &&
                 $request->data()['from'] == "buzzer@zanichelli.it" &&
                 $request->data()['subject'] == "Alert from BUZZER" &&
                 $request->data()['body'] == $body;

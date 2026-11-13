@@ -18,9 +18,9 @@ class Mailer
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer ' . $this->retrieveToken()
         ])
-            ->post(env('URL_SENDY') . 'api/v1/emails', [
-                'to' => explode(",", env('EMAIL_TO')),
-                'from' => env('EMAIL_FROM'),
+            ->post(config('services.sendy.url') . 'api/v1/emails', [
+                'to' => explode(",", config('services.sendy.email_to')),
+                'from' => config('services.sendy.email_from'),
                 'subject' => 'Alert from BUZZER',
                 'body' => $body
             ])
@@ -36,10 +36,10 @@ class Mailer
     public function retrieveToken()
     {
         return Http::asForm()
-            ->post(env('URL_SENDY') . 'oauth/token', [
+            ->post(config('services.sendy.url') . 'oauth/token', [
                 'grant_type' => 'client_credentials',
-                'client_id' => env('CLIENT_ID_SENDY'),
-                'client_secret' => env('CLIENT_SECRET_SENDY'),
+                'client_id' => config('services.sendy.client_id'),
+                'client_secret' => config('services.sendy.client_secret'),
                 'scope' => '',
             ])
             ->throw()
