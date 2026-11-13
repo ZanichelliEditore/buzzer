@@ -113,6 +113,12 @@ export default defineComponent({
           type: "text",
         },
         {
+          label: "Email",
+          field: "email",
+          orderby: "email",
+          type: "text",
+        },
+        {
           type: "buttonDelete",
           dimension: "small",
         },

@@ -11,7 +11,7 @@ class Subscriber extends Model
 
     protected $table = 'subscribers';
 
-    protected $fillable = ['name', 'host'];
+    protected $fillable = ['name', 'host', 'email'];
 
     public function subscriber()
     {
