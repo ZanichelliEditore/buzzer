@@ -108,9 +108,6 @@
 - name: Publish telescope
   command: "docker exec buzzer_app php artisan telescope:publish"
 
-- name: Clear laravel cached files
-  command: "docker exec buzzer_app php artisan optimize:clear"
-
 - name: Cache laravel config, events, routes and views
   command: "docker exec buzzer_app php artisan optimize"
 
