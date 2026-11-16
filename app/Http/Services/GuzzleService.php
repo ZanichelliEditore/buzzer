@@ -4,10 +4,17 @@ namespace App\Http\Services;
 
 use GuzzleHttp\Client;
 use App\Events\SendMessageEvent;
+use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 
 class GuzzleService
 {
+    /**
+     * Seconds subtracted from the token expires_in when caching it
+     */
+    private const TOKEN_EXPIRY_MARGIN = 60;
+
     protected $client;
 
     public function __construct()
@@ -70,9 +77,23 @@ class GuzzleService
      */
     public function sendWithOAuth2(SendMessageEvent $event)
     {
-        $password = openssl_decrypt($event->channelSubscribe->password, 'AES256', env('APP_KEY'), $options = 0, env('CRYPT_KEY'));
-        $token = $this->retrieveToken($event->host, $event->channelSubscribe->username, $password);
+        $password = openssl_decrypt($event->channelSubscribe->password, 'AES256', config('app.key'), $options = 0, config('app.crypt_key'));
+        $clientId = $event->channelSubscribe->username;
 
+        try {
+            $this->postWithBearer($event, $this->retrieveToken($event->host, $clientId, $password));
+        } catch (ClientException $e) {
+            if ($e->getResponse()->getStatusCode() !== 401) {
+                throw $e;
+            }
+            // The cached token may have been revoked or expired early: get a new one and retry once
+            Cache::forget($this->tokenCacheKey($event->host, $clientId, $password));
+            $this->postWithBearer($event, $this->retrieveToken($event->host, $clientId, $password));
+        }
+    }
+
+    private function postWithBearer(SendMessageEvent $event, string $token): void
+    {
         $this->client->post(
             $event->host . $event->channelSubscribe->endpoint,
             [
@@ -88,7 +109,7 @@ class GuzzleService
     }
 
     /**
-     * Send http request GET to retrieve Bearer token
+     * Retrieve the Bearer token, reusing a cached one until it expires
      *
      * @param string $host host url to call to retrieve access token
      * @param string $clientId Client_id to retrieve access token
@@ -96,6 +117,38 @@ class GuzzleService
      * @return string Access token
      */
     public function retrieveToken($host, $clientId, $clientSecret)
+    {
+        $cacheKey = $this->tokenCacheKey($host, $clientId, $clientSecret);
+        $token = Cache::get($cacheKey);
+        if ($token) {
+            return $token;
+        }
+
+        $data = $this->requestToken($host, $clientId, $clientSecret);
+
+        // Expire the cached token a bit earlier than the real one; without expires_in we do not cache it
+        $ttl = isset($data['expires_in']) ? (int) $data['expires_in'] - self::TOKEN_EXPIRY_MARGIN : 0;
+        if ($ttl > 0) {
+            Cache::put($cacheKey, $data['access_token'], $ttl);
+        }
+
+        return $data['access_token'];
+    }
+
+    /**
+     * The secret is part of the key so a password change on the subscriber invalidates the cached token
+     */
+    private function tokenCacheKey(string $host, $clientId, $clientSecret): string
+    {
+        return config('cache.oauth_token_key_prefix') . hash('sha256', $host . '|' . $clientId . '|' . $clientSecret);
+    }
+
+    /**
+     * Send http request POST to the subscriber token endpoint
+     *
+     * @return array decoded token response
+     */
+    private function requestToken($host, $clientId, $clientSecret): array
     {
         $response = $this->client->post(
             $host . 'oauth/token',
@@ -108,6 +161,6 @@ class GuzzleService
                 ],
             ]
         );
-        return json_decode((string) $response->getBody(), true)['access_token'];
+        return json_decode((string) $response->getBody(), true);
     }
 }

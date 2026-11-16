@@ -44,4 +44,17 @@ return [
         ],
     ],
 
+    'sendy' => [
+        'url' => env('URL_SENDY'),
+        'client_id' => env('CLIENT_ID_SENDY'),
+        'client_secret' => env('CLIENT_SECRET_SENDY'),
+        'email_to' => env('EMAIL_TO'),
+        'email_from' => env('EMAIL_FROM'),
+    ],
+
+    'idp' => [
+        'enabled' => env('USE_ZANICHELLI_IDP', false),
+        'url' => env('IDP_URL', 'https://idp.zanichelli.it'),
+    ],
+
 ];
