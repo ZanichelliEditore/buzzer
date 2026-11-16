@@ -125,6 +125,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Subscriber OAuth2 password encryption IV
+    |--------------------------------------------------------------------------
+    |
+    | Initialization vector (16 characters) used together with the app key to
+    | encrypt/decrypt OAuth2 passwords of channel subscribers.
+    |
+    */
+
+    'crypt_key' => env('CRYPT_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |

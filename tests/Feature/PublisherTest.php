@@ -38,7 +38,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testList()
     {
-        $publisher = factory(Publisher::class)->make();
+        $publisher = Publisher::factory()->make();
         $publisher->id = 1;
         $publisher->created_at = '2019-09-09 12:37:55';
         $publisher->updated_at = '2019-09-09 12:37:55';
@@ -77,7 +77,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testShow()
     {
-        $publisher = factory(Publisher::class)->make();
+        $publisher = Publisher::factory()->make();
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
             ->shouldReceive([
                 'find' => $publisher
@@ -109,7 +109,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testFailSave()
     {
-        $publisher = factory(Publisher::class)->make();
+        $publisher = Publisher::factory()->make();
         $request = [
             'name' => $publisher->name,
             'host' => $publisher->host,
@@ -143,7 +143,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testFailDestroy()
     {
-        $publisher = factory(Publisher::class)->make();
+        $publisher = Publisher::factory()->make();
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
             ->shouldReceive([
                 'find' => $publisher,
@@ -159,7 +159,7 @@ class PublisherTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $publisher = factory(Publisher::class)->make();
+        $publisher = Publisher::factory()->make();
         $mock = Mockery::mock(PublisherRepository::class)->makePartial()
             ->shouldReceive([
                 "find" => $publisher,

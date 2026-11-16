@@ -12,7 +12,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 
     public function testAdd()
     {
-        $newChannelPublish = factory(ChannelPublish::class)->make();
+        $newChannelPublish = ChannelPublish::factory()->make();
         $request = [
             'channel_id' => $newChannelPublish->channel_id
         ];
@@ -25,7 +25,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 
     public function testShow()
     {
-        $channelPublish = factory(ChannelPublish::class)->create();
+        $channelPublish = ChannelPublish::factory()->create();
         $response = $this->json('GET', '/api/publishers/' . $channelPublish->publisher_id . '/channels');
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -41,7 +41,7 @@ class ChannelPublishTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $channelPublish = factory(ChannelPublish::class)->create();
+        $channelPublish = ChannelPublish::factory()->create();
         $response = $this->json(
             'DELETE',
             '/api/publishers/' . $channelPublish->publisher_id . '/channels/' . $channelPublish->channel_id

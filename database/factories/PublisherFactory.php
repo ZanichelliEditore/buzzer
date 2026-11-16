@@ -1,19 +1,31 @@
 <?php
 
-/* @var $factory \Illuminate\Database\Eloquent\Factory */
+namespace Database\Factories;
 
 use App\Models\Publisher;
-use Illuminate\Support\Str;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
-$factory->define(Publisher::class, function (Faker $faker) {
-    return [
-        'name' => Str::random(50),
-        'host' => "http://" . Str::random(10) . '.zanichelli',
-        'username' => Str::random(50),
-        'password' => Hash::make('password'), // password
-        'created_at' => $faker->dateTime(),
-        'updated_at' => $faker->dateTime(),
-    ];
-});
+/**
+ * @extends Factory<Publisher>
+ */
+class PublisherFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'name' => Str::random(50),
+            'host' => "http://" . Str::random(10) . '.zanichelli',
+            'username' => Str::random(50),
+            'password' => Hash::make('password'), // password
+            'created_at' => $this->faker->dateTime(),
+            'updated_at' => $this->faker->dateTime(),
+        ];
+    }
+}

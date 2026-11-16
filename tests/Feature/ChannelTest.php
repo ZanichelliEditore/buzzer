@@ -52,10 +52,10 @@ class ChannelTest extends TestCaseWithoutMiddleware
 
     public function testShowSubscriber200Response()
     {
-        $channel = factory(Channel::class)->make();
+        $channel = Channel::factory()->make();
         $channel->id = 1;
         $channel_copy = $channel;
-        $subscriber = factory(Subscriber::class)->make();
+        $subscriber = Subscriber::factory()->make();
         $subscriber->id = 1;
         unset($subscriber['created_at']);
         unset($subscriber['updated_at']);
@@ -117,8 +117,8 @@ class ChannelTest extends TestCaseWithoutMiddleware
 
     public function testShowPublisher200Response()
     {
-        $channel = factory(Channel::class)->make();
-        $publisher = factory(Publisher::class)->make();
+        $channel = Channel::factory()->make();
+        $publisher = Publisher::factory()->make();
         $channel->publishers = collect([$publisher]);
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
             ->shouldReceive([
@@ -146,7 +146,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
 
     public function testList()
     {
-        $channel = factory(Channel::class)->make();
+        $channel = Channel::factory()->make();
         $channel->id = 1;
         $channel->priority = 'default';
         $channel->created_at = '2019-9-13 15:23:55';
@@ -183,7 +183,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
 
     public function testShow()
     {
-        $channel = factory(Channel::class)->make();
+        $channel = Channel::factory()->make();
         $channel->id = 9999999999;
         $channel->priority = 'default';
         $channel->created_at = '2019-9-13 15:23:55';
@@ -268,7 +268,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
 
     public function testSendMessageWithoutAuth()
     {
-        $channel = factory(Channel::class)->make();
+        $channel = Channel::factory()->make();
 
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
             ->shouldReceive([
@@ -285,7 +285,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
 
     public function testFailDestroy()
     {
-        $channel = factory(Channel::class)->make();
+        $channel = Channel::factory()->make();
 
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
             ->shouldReceive([
@@ -302,7 +302,7 @@ class ChannelTest extends TestCaseWithoutMiddleware
 
     public function testDestroy()
     {
-        $channel = factory(Channel::class)->make();
+        $channel = Channel::factory()->make();
 
         $mock = Mockery::mock(ChannelRepository::class)->makePartial()
             ->shouldReceive([

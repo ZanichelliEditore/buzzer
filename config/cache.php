@@ -106,6 +106,7 @@ return [
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_cache:'),
     'channel_key_prefix' => "channel.",
     'subscriber_paused_key_prefix' => "subscriber_paused.",
+    'oauth_token_key_prefix' => "oauth_token.",
     'subscriber_paused_ttl' => env('SUBSCRIBER_PAUSED_TTL', 3600)
 
 ];

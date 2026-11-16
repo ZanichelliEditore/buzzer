@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
             'endpoint' => 'api/oauth',
             'authentication' => 'OAUTH2',
             'username' => 1,
-            'password' => openssl_encrypt('secretOAuth2Example', 'AES256', env('APP_KEY'), $options = 0, env('CRYPT_KEY')),
+            'password' => openssl_encrypt('secretOAuth2Example', 'AES256', config('app.key'), $options = 0, config('app.crypt_key')),
             'created_at' => '2019-09-12 15:40:06',
             'updated_at' => '2019-09-12 15:40:06'
         ]);
