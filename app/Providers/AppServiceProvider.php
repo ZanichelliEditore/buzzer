@@ -16,6 +16,7 @@ use App\Http\Controllers\ChannelPublishController;
 use App\Http\Repositories\ChannelPublishRepository;
 use App\Http\Controllers\ChannelSubscribeController;
 use App\Http\Repositories\ChannelSubscribeRepository;
+use App\Http\Services\GuzzleService;
 use Dedoc\Scramble\Scramble;
 use Laravel\Passport\Passport;
 
@@ -69,6 +70,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->when(ChannelSubscribeController::class)
             ->needs(RepositoryInterface::class)
             ->give(ChannelSubscribeRepository::class);
+
+        // One HTTP client per queue worker: keeps connections (and TLS sessions) to subscribers alive across jobs
+        $this->app->singleton(GuzzleService::class);
 
         Scramble::ignoreDefaultRoutes();
     }

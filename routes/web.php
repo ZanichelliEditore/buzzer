@@ -16,7 +16,7 @@ use Dedoc\Scramble\Scramble;
 
 $middleware = [];
 $middlewareCheckRole = [];
-if (env("USE_ZANICHELLI_IDP")) {
+if (config('services.idp.enabled')) {
     $middleware = ['middleware' => 'idp'];
     $middlewareCheckRole = ['middleware' => 'check.role'];
 }
@@ -80,7 +80,7 @@ Route::middleware([])->group(function () {
 });
 
 Route::get('/login', function () {
-    return redirect(env('IDP_URL', 'https://idp.zanichelli.it') . '?' . http_build_query([
+    return redirect(config('services.idp.url') . '?' . http_build_query([
         'redirect' => config('app.url')
     ]));
 })->name('login');
