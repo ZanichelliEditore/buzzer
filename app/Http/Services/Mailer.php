@@ -11,7 +11,7 @@ class Mailer
      *
      * @return string message received from server
      */
-    public function dispatchEmail($body)
+    public function dispatchEmail($body, ?array $to = null)
     {
         return Http::withHeaders([
             'Accept' => 'application/json',
@@ -19,7 +19,7 @@ class Mailer
             'Authorization' => 'Bearer ' . $this->retrieveToken()
         ])
             ->post(config('services.sendy.url') . 'api/v1/emails', [
-                'to' => explode(",", config('services.sendy.email_to')),
+                'to' => $to ? $to : explode(",", config('services.sendy.email_to')),
                 'from' => config('services.sendy.email_from'),
                 'subject' => 'Alert from BUZZER',
                 'body' => $body
