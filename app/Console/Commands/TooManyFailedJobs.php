@@ -53,7 +53,7 @@ class TooManyFailedJobs extends Command
         }
 
         if ($count > 10000) {
-            $this->mailer->dispatchEmail(view('email')->with(['alertCount' => $count])->render(), [config('mail.email_to')]);
+            $this->mailer->dispatchEmail(view('email')->with(['alertCount' => $count])->render(), [config('services.sendy.email_to')]);
             return 0;
         }
 

@@ -81,7 +81,7 @@ class FailedJobServiceTest extends TestCaseWithoutMiddleware
         $this->createFailedJob($subscriber->id, 'channelA');
 
         $this->assertSame(
-            [config('mail.email_to') => ['channelA' => 1]],
+            [config('services.sendy.email_to') => ['channelA' => 1]],
             $this->service->failedJobsBySubscriber()
         );
     }

@@ -41,7 +41,7 @@ class FailedJobService
 
         $counts = [];
         foreach ($countsBySubscriber as $subscriberId => $channels) {
-            $email = !empty($emails[$subscriberId]) ? $emails[$subscriberId] : config('mail.email_to');
+            $email = !empty($emails[$subscriberId]) ? $emails[$subscriberId] : config('services.sendy.email_to');
             foreach ($channels as $channelName => $count) {
                 $counts[$email][$channelName] = ($counts[$email][$channelName] ?? 0) + $count;
             }
