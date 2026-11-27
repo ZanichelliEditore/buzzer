@@ -30,6 +30,20 @@
           />
         </div>
       </div>
+      <div class="col-12 col-md-6 col-xl-3 mt-2 me-3">
+        <div>
+          <label class="mb-0 me-3" for="email-input">Email</label>
+        </div>
+        <div>
+          <input
+            id="email-input"
+            type="text"
+            name="email"
+            v-model="email"
+            :class="'form-control'"
+          />
+        </div>
+      </div>
       <div class="col-2 col-xl-1 mt-2 me-3 d-flex align-items-end">
         <button
           :disabled="saving || validateForms"
@@ -66,6 +80,7 @@ export default defineComponent({
     return {
       name: "",
       host: "",
+      email: "",
       saving: false,
     };
   },
@@ -97,6 +112,7 @@ export default defineComponent({
       const payload = {
         name: this.name,
         host: this.host,
+        email: this.email,
       };
 
       this.subscribersStore
@@ -111,6 +127,7 @@ export default defineComponent({
           });
           this.name = "";
           this.host = "";
+          this.email = "";
           this.saving = false;
         })
         .catch(err => {

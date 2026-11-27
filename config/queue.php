@@ -106,6 +106,6 @@ return [
         'DEFAULT' => 'default',
     ],
 
-    'timeout' => env('JOB_TIMEOUT', 30)
+    'timeout' => (int) env('JOB_TIMEOUT', 30)
 
 ];
